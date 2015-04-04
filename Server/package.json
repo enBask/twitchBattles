@@ -1,0 +1,16 @@
+{
+  "author" : {
+    "name" : "whilke",
+    "url" : "http://www.enbask.com"
+  },
+  "name" : "twitchBattle",
+  "keywords" : [ ],
+  "version" : "0.0.1",
+  "bugs" : {
+    "url" : "null"
+  },
+  "main" : "./app.js",
+  "license" : {
+    "type" : "mit"
+  }
+}
