@@ -5,6 +5,7 @@ var http
 var running = false
 var object
 var callback
+var thread = null
 
 func _init():
 	http = HTTPClient.new()
@@ -26,8 +27,9 @@ func get(var url, var object, var callback):
 	self.object = object
 	self.callback = callback
 	
-	
-	var thread = Thread.new()
+	if (thread == null):
+		thread = Thread.new()
+
 	var err = thread.start(self, "get_thread", parse_url(url) )
 	
 	return true
@@ -71,18 +73,25 @@ func parse_url(var url):
 	}
 	
 func on_data(var data):
+	running =false
 	object.call(callback, data)
 	
 
 func get_thread(user_data):
 	var data = ""
+	
+	http.close()
+	http = HTTPClient.new()
+	
 	var err = http.connect(user_data["address"], user_data["port"], user_data["protocol"] == "https")
 	if (err != OK):
 		call_deferred("on_data", data)
 		
 	while(http.get_status() == HTTPClient.STATUS_CONNECTING or
 		  http.get_status() == HTTPClient.STATUS_RESOLVING):
-		http.poll()
+		err = http.poll()
+		if (err != OK):
+			call_deferred("on_data", data)
 		OS.delay_msec(10)	
 
 	if (http.get_status() != HTTPClient.STATUS_CONNECTED):
@@ -109,6 +118,8 @@ func get_thread(user_data):
 	var rb = RawArray()
 	while(http.get_status() == HTTPClient.STATUS_BODY):		
 		http.poll()
+		if (err != OK):
+			call_deferred("on_data", data)
 		var chunk = http.read_response_body_chunk()
 		if (chunk.size() == 0):
 			OS.delay_msec(10)

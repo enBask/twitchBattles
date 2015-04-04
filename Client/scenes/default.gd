@@ -6,7 +6,7 @@ var webClient = preload("res://scripts/httpClient.gd")
 var labelNode
 var timerNode
 
-var web
+var web = null
 var update_url
 
 func _ready():
@@ -31,7 +31,10 @@ func on_init_server(data):
 
 func _on_Timer_timeout():
 	timerNode.stop()
-	web = webClient.new()
+	
+	if (web !=null):
+		web = webClient.new()
+	
 	web.get(update_url, self, "on_fetch_server")
 	
 func on_fetch_server(data):
