@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<resource_file type="PackedScene" subresource_count="2" version="1.0" version_name="Godot Engine v1.0.stable.custom_build">
+<resource_file type="PackedScene" subresource_count="2" version="1.1" version_name="Godot Engine v1.1.beta1.custom_build">
 	<ext_resource path="res://scenes/default.gd" type="Script"></ext_resource>
 	<main_resource>
 		<dictionary name="_bundled" shared="false">
@@ -58,7 +58,7 @@
 			<string> "node_count" </string>
 			<int> 3 </int>
 			<string> "variants" </string>
-			<array  len="18" shared="false">
+			<array  len="19" shared="false">
 				<node_path> "" </node_path>
 				<bool> True </bool>
 				<real> 1 </real>
@@ -74,7 +74,7 @@
 						<string> "Script" </string>
 						<dictionary  shared="false">
 							<string> "current" </string>
-							<int> 0 </int>
+							<int> 1 </int>
 							<string> "sources" </string>
 							<array  len="2" shared="false">
 								<string> "res://scripts/httpClient.gd" </string>
@@ -83,16 +83,28 @@
 						</dictionary>
 						<string> "2D" </string>
 						<dictionary  shared="false">
-							<string> "pixel_snap" </string>
+							<string> "snap_pixel" </string>
 							<bool> False </bool>
+							<string> "snap_rotation_step" </string>
+							<real> 0.261799 </real>
 							<string> "zoom" </string>
 							<real> 0.9025 </real>
-							<string> "use_snap" </string>
-							<bool> False </bool>
-							<string> "snap_vec" </string>
+							<string> "snap_step" </string>
 							<vector2> 10, 10 </vector2>
+							<string> "snap_relative" </string>
+							<bool> False </bool>
+							<string> "snap_grid" </string>
+							<bool> False </bool>
+							<string> "snap_rotation_offset" </string>
+							<real> 0 </real>
+							<string> "snap_show_grid" </string>
+							<bool> False </bool>
+							<string> "snap_offset" </string>
+							<vector2> 0, 0 </vector2>
 							<string> "ofs" </string>
 							<vector2> -286.971, -261.479 </vector2>
+							<string> "snap_rotation" </string>
+							<bool> False </bool>
 						</dictionary>
 						<string> "3D" </string>
 						<dictionary  shared="false">
@@ -205,9 +217,10 @@
 				<bool> False </bool>
 				<string> "Server Url:" </string>
 				<real> -1 </real>
+				<real> 5 </real>
 			</array>
 			<string> "nodes" </string>
-			<int_array  len="113"> 				-1, -1, 0, 0, -1, 12, 1, 0, 2, 1, 3, 2, 4, 2, 5, 3, 6, 4, 7, 5, 8, 6, 9, 7, 10, 1, 11, 8, 12, 9, 0, 0, 0, 13, 13, -1, 30, 1, 0, 2, 1, 3, 2, 4, 2, 5, 3, 14, 10, 15, 11, 16, 12, 17, 13, 18, 0, 19, 0, 20, 0, 21, 0, 22, 1, 23, 1, 24, 14, 25, 2, 26, 5, 27, 2, 28, 2, 29, 2, 30, 5, 31, 15, 32, 15, 33, 16, 34, 7, 35, 7, 36, 15, 37, 15, 38, 17, 0, 0, 0, 39, 39, -1, 4, 1, 0, 40, 2, 41, 15, 42, 15, 0 </int_array>
+			<int_array  len="113"> 				-1, -1, 0, 0, -1, 12, 1, 0, 2, 1, 3, 2, 4, 2, 5, 3, 6, 4, 7, 5, 8, 6, 9, 7, 10, 1, 11, 8, 12, 9, 0, 0, 0, 13, 13, -1, 30, 1, 0, 2, 1, 3, 2, 4, 2, 5, 3, 14, 10, 15, 11, 16, 12, 17, 13, 18, 0, 19, 0, 20, 0, 21, 0, 22, 1, 23, 1, 24, 14, 25, 2, 26, 5, 27, 2, 28, 2, 29, 2, 30, 5, 31, 15, 32, 15, 33, 16, 34, 7, 35, 7, 36, 15, 37, 15, 38, 17, 0, 0, 0, 39, 39, -1, 4, 1, 0, 40, 18, 41, 15, 42, 15, 0 </int_array>
 			<string> "conns" </string>
 			<int_array  len="6"> 				2, 0, 44, 43, 2, 0 </int_array>
 		</dictionary>
