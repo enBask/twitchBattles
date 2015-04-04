@@ -1,12 +1,34 @@
+var fs = require('fs'),
+    nconf = require('nconf');
+    
 var express = require('express');
-var GameServer = require("./gameServer/server.js");
 var app = express();
+
+//load up env based config file.
+nconf.set('game_server_password', 'password');
+nconf.set('twitch_name', 'test');
+nconf.set('twitch_auth', 'test');
+nconf.set('twitch_channel', '#test');
+nconf.set('twitch_command', '!battle');
+
+nconf.argv()
+     .env()
+     .file({file: './config.json'});
+
+
+     
+   console.log( nconf.get('twitch_name'));
+
+
+var GameServer = require("./gameServer/server.js");
 var battleServer = GameServer.Instance();
 
 
 //load up routes once globals are created
 var godotRoutes = require("./routes/godot.js");
+var webRoutes = require("./routes/web.js");
 app.use("/headless", godotRoutes);
+app.use("/web", webRoutes);
 
 var server = app.listen(8080, function() {
    
