@@ -1,3 +1,4 @@
+var nconf = require('nconf');
 var GameServer = require("../gameServer/server.js");
 var battleServer = GameServer.Instance();
 
@@ -12,7 +13,7 @@ router.get("/get_token/:pass", function(req, res) {
     var token_str =  battleServer.GetToken(pass);
     var token = {
         token :  token_str,
-        fetch_url : "http://GAMESERVER:8080/headless/world_state/" + token_str
+        fetch_url : nconf.get("game_server_fetch_url") + token_str
     }; 
         
     res.setHeader('Content-Type:', 'application/json');
