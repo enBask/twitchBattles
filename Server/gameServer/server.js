@@ -5,8 +5,8 @@ var nconf = require('nconf');
 var ChatCommands = require("./chat_commands.js");
 var AuthCommands = require("./auth.js");
 
-ChatCommands.bind(GameServer);
 AuthCommands.bind(GameServer);
+ChatCommands.bind(GameServer);
 
 // Constructor - Do not use externally - can't make this private unfortunately.
 function GameServer() {
@@ -23,8 +23,6 @@ function GameServer() {
     this.BindChatCommands();
     // Setup Database Instance.
     this.Database = new Database();
-
-    console.log(this);
 }
 
 // Gets the current instance of the GameServer - Use this instead of the constructor above.

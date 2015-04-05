@@ -26,7 +26,7 @@ twitchBot.prototype.enable = function() {
            password: this.auth,
            autorejoin: true,
            pluginsPath: "./plugins/",
-           debug: true,
+           debug: false,
            secure: false,
            floodProtection: false,
            channels: [this.channel]

@@ -4,9 +4,7 @@ var nconf = require('nconf');
 var express = require('express');
 var app = express();
 
-nconf.argv()
-     .env()
-     .file({file: './config.json'});
+
 
 //load up env based config file.
 nconf.set('game_server_password', 'password');
@@ -14,6 +12,10 @@ nconf.set('twitch_name', 'test');
 nconf.set('twitch_auth', 'test');
 nconf.set('twitch_channel', '#test');
 nconf.set('twitch_command', '!battle');
+
+nconf.argv()
+     .env()
+     .file({file: './config.json'});
      
 console.log(nconf.get("twitch_name"));
 

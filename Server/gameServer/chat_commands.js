@@ -37,7 +37,7 @@ var ChatCommands = {
         var callback = this.ChatCommands[cmd];
 
         if (callback !== undefined) {
-          callback(who, args);
+           callback.call(this, who, args);
         }
     };
 
@@ -51,10 +51,11 @@ var ChatCommands = {
         if (args.length !== 1) 
           return;
 
-        console.log("RegisterChatCommand who: " + who + " args: " + args);
-
-        // TODO: This causes an undefined error.
-        this.RegisterUser(who, args);
+        this.ActivateUser("twitch", who, args[0], function(result) {
+        if (result)
+            console.log("user " + who + " registered.");
+            
+        });
     };
 
     // Binds all chat commands.

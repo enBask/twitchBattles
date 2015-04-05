@@ -4,24 +4,26 @@ var battleServer = GameServer.Instance();
 var express = require('express');
 var router = express.Router();
 
-router.get("/create_user/:service/:username", function(req, res) {
+router.get("/create_user/:service/:username/:password", function(req, res) {
     
     
     var service = req.params.service;
     var user = req.params.username;
+    var pass = req.params.password;
     
     var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     
-    var result = battleServer.CreateUser(service,user, ip);
-    
-    res.setHeader('Content-Type:', 'application/json');
-    
-    var token = {
-      created: true,
-      authcode: result.authcode      
-    };
-    
-    res.end( JSON.stringify( token ) );
+    battleServer.CreateUser(service,user,pass,ip, function(result){
+        
+        res.setHeader('Content-Type:', 'application/json');
+
+        var token = {
+          created: true,
+          authcode: result.authcode      
+        };
+
+        res.end( JSON.stringify( token ) );        
+    });
     
 });
 
