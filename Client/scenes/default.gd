@@ -16,7 +16,7 @@ func _ready():
 	timerNode = get_node("Timer")
 	
 	web = webClient.new()
-	web.get("http://GAMESERVER:8080/headless/get_token/password", self, "on_init_server")
+	web.get("http://www.enbask.com:8081/headless/get_token/password", self, "on_init_server")
 
 func on_init_server(data):
 	var d = {}
