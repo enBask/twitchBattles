@@ -41,6 +41,13 @@ func on_fetch_server(data):
 	var d = {}
 	var err = d.parse_json(data)
 	if (err == OK):
-		labelNode.set_text("Status: " + d["status"] + "\r\n" + "Time:" + str(d["time"]));
+		var status = d["status"]
+		if (status == "OK"):
+			var users = d["checked_in"]
+			var checked_in_users = ""
+			for user in users:
+				checked_in_users = checked_in_users + user + "\r\n"
+			
+			labelNode.set_text("Checked in users:\r\n" + checked_in_users);
 	
 	timerNode.start()
