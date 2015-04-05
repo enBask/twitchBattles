@@ -45,7 +45,7 @@ var ChatCommands = {
     obj.prototype.TestChatCommand = function (who, args) {
         console.log("TEST command: " + who + " | " + args.toString());
         
-        this.TwitchBot.say_message(args.toString());
+        //this.TwitchBot.say_message(args.toString());
         
     };
 
