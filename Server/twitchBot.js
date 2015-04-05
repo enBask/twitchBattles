@@ -8,8 +8,7 @@ function twitchBot(username, auth, channel, command, gameServer) {
     this.auth = auth;
     this.channel = channel;
     this.command = command;
-    this.gameServer = gameServer;
-    
+    this.gameServer = gameServer;   
 }
 
 twitchBot.prototype.enable = function() {
@@ -34,7 +33,12 @@ twitchBot.prototype.enable = function() {
     
     this.bot.client.owner = this;
             
-    this.bot.client.addListener('message', this.get_message);    
+    this.bot.client.addListener('message', this.get_message);   
+    
+    this.say_throttle_func = function(message) {
+        this.bot.client.say(this.channel, message);
+        };    
+    this.say = this.say_throttle(this.say_throttle_func, 2000, this);
 };
 
 twitchBot.prototype.disable = function() {
@@ -60,8 +64,67 @@ twitchBot.prototype.get_message = function(from, channel, message) {
 };
 
 twitchBot.prototype.say_message = function(message) {
-    
+    this.say(message);
 };
+
+
+twitchBot.prototype.say_throttle = function (func, t, ctx) {
+	var timeout = false
+	  , queue = []
+	  , qf = function() {
+		  var q = queue.shift();
+		  if(q) { 
+                      q.func(q.msg); timeout = setTimeout(qf, t); 
+                  } 
+                  else { 
+                      timeout = false; 
+                  }
+	  }
+	  ;
+	
+	var f = function() {
+		var message = arguments[0]
+		  , i = function(data) {
+			func.call(ctx, data);
+		};
+		if(timeout && timeout._idleNext) {
+                    
+                    var addToQueue = true;
+                    if (queue.length > 0)
+                    {
+                        for(var i = 0; i < queue.length; i++)
+                        {
+                            var item = queue[i];
+                            var msg = item.msg;
+                            if (msg.length + message.length <= 500)
+                            {                                 
+                                item.msg += " , " + message;
+                                addToQueue = false;
+                                break;
+                            }                                                                
+                        }
+                    }
+
+                    if (addToQueue)
+                    {
+                        queue.push({
+                            msg: message,
+                            func: i
+                        });
+                    }
+                    
+		} else {
+    		        queue.push({
+                            msg: message,
+                            func: i
+                        });
+			timeout = setTimeout(qf, t);
+		}
+		return timeout;
+	};
+
+	return f;
+}
 
 module.exports = twitchBot;
 

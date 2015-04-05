@@ -15,11 +15,20 @@ router.get("/create_user/:service/:username/:password", function(req, res) {
     
     battleServer.CreateUser(service,user,pass,ip, function(result){
         
+        var authcode = "";
+        var created = false;
+        
+        if (result != null)
+        {
+            created = true;
+            authcode = result.authcode;
+        }
+        
         res.setHeader('Content-Type:', 'application/json');
 
         var token = {
-          created: true,
-          authcode: result.authcode      
+          created: created,
+          authcode: authcode      
         };
 
         res.end( JSON.stringify( token ) );        

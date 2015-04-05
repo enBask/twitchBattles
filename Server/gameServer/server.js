@@ -23,6 +23,9 @@ function GameServer() {
     this.BindChatCommands();
     // Setup Database Instance.
     this.Database = new Database();
+    
+    
+    this.users = [];
 }
 
 // Gets the current instance of the GameServer - Use this instead of the constructor above.
@@ -53,13 +56,34 @@ GameServer.prototype.ValidateToken = function (token) {
 
 // Gets the current world state.
 GameServer.prototype.GetWorldState = function () {
-    var date = new Date();
+    
+    var user_names = [];
+    this.users.forEach(function(user){
+       user_names.push(user.username); 
+    });
+    
     var world = {
         status: "OK",
-        time: date.getSeconds()
+        checked_in: user_names       
     };
     return world;
 };
+
+GameServer.prototype.CheckinForRound = function (user) {
+    
+    for(i = 0; i < this.users.length; ++i )
+    {
+        var chk = this.users[i];
+        if (chk.username === user.username)
+        {
+            return false;
+        }      
+    }
+    
+    this.users.push(user);
+    return true;
+    
+}
 
 // Holds the instance of the GameServer
 GameServer._instance = null;

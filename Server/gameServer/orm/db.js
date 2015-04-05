@@ -37,7 +37,7 @@ var Database = (function () {
   };
 
   // Checks if a user already exists. 
-  Database.prototype.UserExists = function (service, username) {
+  Database.prototype.UserExists = function (service, username, done) {
       this.User.find({
           where: {
               service: service,
@@ -45,9 +45,8 @@ var Database = (function () {
               active: true
           }
       }).then(function (user) {
-          return true;
+         done( user );
       });
-      return false;
   };
 
   // Clears pending user account(s) (Active: false)
@@ -76,23 +75,28 @@ var Database = (function () {
 
   // Creates a user account if it does not already exist.
   Database.prototype.CreateUser = function (service, username, password, ip, done) {
-      if (this.UserExists(service, username)) {
-          done(null);
-      };
-
+      
       var self = this;
-      this.ClearPendingUser(service, username, function(){
-        var user = self.User.build({
-            service: service,
-            username: username,
-            authip: ip,
-            authcode: self.GenerateAuthCode(),
-            password: self.CreatePasswordHash(password)
-        });
+       
+      this.UserExists(service, username, function(result){         
+          if (result)
+              done(null);
+          else
+          {             
+              self.ClearPendingUser(service, username, function(){
+                var user = self.User.build({
+                    service: service,
+                    username: username,
+                    authip: ip,
+                    authcode: self.GenerateAuthCode(),
+                    password: self.CreatePasswordHash(password)
+                });
 
-        user.save();          
-        
-        done(user);
+                user.save();          
+
+                done(user);
+              });
+          }
       });
   };
 

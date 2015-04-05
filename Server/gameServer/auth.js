@@ -9,6 +9,10 @@ bind: function(obj) {
         obj.prototype.CreateUser = function (service, username, password, ip, done) {
             this.Database.CreateUser(service, username, password, ip, done);
         };
+        
+        obj.prototype.GetUser = function (service, username, done) {
+            this.Database.UserExists(service, username, done);
+        }
 }};
 
 module.exports = AuthCommands;
