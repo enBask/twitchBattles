@@ -1,64 +1,70 @@
-var chat_commands = require("./chat_commands.js");
-var auth_commands = require("./auth.js");
-
-var DataBase = require("./orm/db.js");
-var twitchBot = require("../twitchBot.js");
+var Database = require("./orm/db.js");
+var TwitchBot = require("../twitchBot.js");
 var nconf = require('nconf');
 
-chat_commands.bind(GameServer);
-auth_commands.bind(GameServer);
+var ChatCommands = require("./chat_commands.js");
+var AuthCommands = require("./auth.js");
 
+ChatCommands.bind(GameServer);
+AuthCommands.bind(GameServer);
 
-function GameServer(){
-    this.headless_token = "token"; //generate random token
+// Constructor - Do not use externally - can't make this private unfortunately.
+function GameServer() {
+    // Generate Token
+    this.Token = this.GenerateToken();
+    // Setup Twitch Bot Instance.
+    this.TwitchBot = new TwitchBot(
+        nconf.get("twitch_name"),
+        nconf.get("twitch_auth"),
+        nconf.get("twitch_channel"),
+        nconf.get("twitch_command"),
+        this);
+    this.TwitchBot.enable();
+    this.BindChatCommands();
+    // Setup Database Instance.
+    this.Database = new Database();
 
-    this.twitch_bot = new twitchBot(nconf.get("twitch_name"),
-                    nconf.get("twitch_auth"),
-                    nconf.get("twitch_channel"),
-                    nconf.get("twitch_command"),
-                    this);
-                    
-    this.db = new DataBase();
-                    
-    this.twitch_bot.enable();        
-    this.bind_chat_commands();
+    console.log(this);
 }
 
-GameServer._instance = null;
-GameServer.Instance = function(){
-    if (GameServer._instance === null)
-        GameServer._instance = new GameServer();
-    
+// Gets the current instance of the GameServer - Use this instead of the constructor above.
+GameServer.Instance = function () {
+    if (GameServer._instance === null) {
+        return GameServer._instance = new GameServer();
+    }
     return GameServer._instance;
 };
 
-GameServer.prototype.get_token = function(password){
-    
-    if (password === nconf.get("game_server_password"))
-    {
-        return this.headless_token;
-    }
-    else
-    {
-        return "";
-    }
+// Generates a new token.
+GameServer.prototype.GenerateToken = function () {
+    return "token";
 };
 
-GameServer.prototype.is_token_valid = function(token) {
-    return (token === this.headless_token)
+// Gets the token if the password is valid.
+GameServer.prototype.GetToken = function (password) {
+    if (password === "password") {
+        return this.Token;
+    }
+    return "";
 };
 
-GameServer.prototype.get_world_state = function() {
+// Validates a token.
+GameServer.prototype.ValidateToken = function (token) {
+    return (token === this.Token);
+};
 
+// Gets the current world state.
+GameServer.prototype.GetWorldState = function () {
     var date = new Date();
     var world = {
-        status: "ok",
+        status: "OK",
         time: date.getSeconds()
     };
-    
-    return world; 
+    return world;
 };
 
+// Holds the instance of the GameServer
+GameServer._instance = null;
 
 
 module.exports = GameServer;

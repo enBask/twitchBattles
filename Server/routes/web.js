@@ -12,7 +12,7 @@ router.get("/create_user/:service/:username", function(req, res) {
     
     var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     
-    var result = battleServer.create_user(service,user, ip);
+    var result = battleServer.CreateUser(service,user, ip);
     
     res.setHeader('Content-Type:', 'application/json');
     
@@ -25,5 +25,20 @@ router.get("/create_user/:service/:username", function(req, res) {
     
 });
 
+router.get("/register/:username", function(req, res) {
+
+    var username = req.params.username;
+
+    var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+    res.setHeader('Content-Type:', 'application/json');
+
+    var token = {
+        registered: true,
+        username: username
+    };
+
+    res.end(JSON.stringify(token));
+});
 
 module.exports = router;
