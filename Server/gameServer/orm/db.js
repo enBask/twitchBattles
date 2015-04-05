@@ -1,5 +1,6 @@
 var Sequelize = require('sequelize');
 var hat = require('hat');
+var bcrypt = require('bcrypt');
 
 var Database = (function () {
 
@@ -7,7 +8,7 @@ var Database = (function () {
   function Database() {
         var sql = new Sequelize('', '', '', {
             dialect: 'sqlite',
-            storage: '/twitchBattle.sqlite'
+            storage: './twitchBattle.sqlite'
         });
         this.databaseDriver = sql;
         this.User = sql.define('user', {
@@ -16,6 +17,10 @@ var Database = (function () {
             },
             username: {
                 type: Sequelize.STRING
+            },
+            password: {
+                type: Sequelize.STRING,
+                allowNull: false
             },
             authcode: {
                 type: Sequelize.STRING
@@ -32,7 +37,7 @@ var Database = (function () {
   };
 
   // Checks if a user already exists. 
-  Database.prototype.UserExists = function (service, username) {
+  Database.prototype.UserExists = function (service, username, done) {
       this.User.find({
           where: {
               service: service,
@@ -40,13 +45,12 @@ var Database = (function () {
               active: true
           }
       }).then(function (user) {
-          return true;
+         done( user );
       });
-      return false;
   };
 
   // Clears pending user account(s) (Active: false)
-  Database.prototype.ClearPendingUser = function (service, username) {      
+  Database.prototype.ClearPendingUser = function (service, username, done) {      
       this.User.findAll({
           where: {
               service: service,
@@ -64,43 +68,57 @@ var Database = (function () {
                   data.destroy();
               }
           }
+          
+          done();
       });
   };
 
   // Creates a user account if it does not already exist.
-  Database.prototype.CreateUser = function (service, username, ip) {
-      if (this.UserExists(service, username)) {
-          return null;
-      };
-
-      this.ClearPendingUser(service, username);
-      var user = this.User.build({
-          service: service,
-          username: username,
-          authip: ip,
-          authcode: this.GenerateAuthCode()
-      });
-
-      user.save();
+  Database.prototype.CreateUser = function (service, username, password, ip, done) {
       
-      return user;
+      var self = this;
+       
+      this.UserExists(service, username, function(result){         
+          if (result)
+              done(null);
+          else
+          {             
+              self.ClearPendingUser(service, username, function(){
+                var user = self.User.build({
+                    service: service,
+                    username: username,
+                    authip: ip,
+                    authcode: self.GenerateAuthCode(),
+                    password: self.CreatePasswordHash(password)
+                });
+
+                user.save();          
+
+                done(user);
+              });
+          }
+      });
   };
 
   // Activates a pending user account.
-  Database.prototype.ActivateUser = function (service, username, ip, authcode) {
+  Database.prototype.ActivateUser = function (service, username, hash, done) {
       this.User.find({
           where: {
               service: service,
               username: username,
-              ip: ip,
-              authcode: authcode
+              authcode: hash,
+              active: false
           }
       }).then(function (user) {
-          user.active = true;
-          user.save();
-          return true;
-      });
-      return false;
+          if (user !== null)
+          {
+            user.active = true;
+            user.save();                   
+            done(true);
+          }
+          
+          done(false);
+     });
   };
 
   // Generates an auth code for a new user.
@@ -108,7 +126,19 @@ var Database = (function () {
       var id = hat();
       return id.toString();
   };
-
+  
+  Database.prototype.CreatePasswordHash = function(password) {
+      
+      var salt = bcrypt.genSaltSync(10);
+      var hash = bcrypt.hashSync(password, salt);
+      return hash;
+  };
+  
+  Database.prototype.ValidatePassword = function(password, hash) {
+      
+      return bcrypt.compareSync(password, hash);
+  };
+  
   return Database;
 })();
 
