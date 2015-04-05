@@ -1,16 +1,24 @@
 {
-  "author" : {
-    "name" : "whilke",
-    "url" : "http://www.enbask.com"
+  "author": {
+    "name": "whilke",
+    "url": "http://www.enbask.com"
   },
-  "name" : "twitchBattle",
-  "keywords" : [ ],
-  "version" : "0.0.1",
-  "bugs" : {
-    "url" : "null"
+  "name": "twitchBattle",
+  "keywords": [],
+  "version": "0.0.1",
+  "bugs": {
+    "url": "null"
   },
-  "main" : "./app.js",
-  "license" : {
-    "type" : "mit"
+  "main": "./app.js",
+  "license": {
+    "type": "mit"
+  },
+  "dependencies": {
+    "express": "^4.12.3",
+    "hat": "0.0.3",
+    "ircbot": "0.0.5",
+    "nconf": "^0.7.1",
+    "sequelize": "^2.0.5",
+    "sqlite3": "^3.0.5"
   }
 }

@@ -26,7 +26,7 @@ twitchBot.prototype.enable = function() {
            password: this.auth,
            autorejoin: true,
            pluginsPath: "./plugins/",
-           debug: false,
+           debug: true,
            secure: false,
            floodProtection: false,
            channels: [this.channel]
@@ -50,13 +50,12 @@ twitchBot.prototype.disable = function() {
 };
 
 twitchBot.prototype.get_message = function(from, channel, message) {
-    
     var command = this.owner.command.toString();
     if (message.indexOf(command) === 0) {
         var args = message.substr(command.length, message.length);
         args = args.trim();
         
-        this.owner.gameServer.process_chat_command(from, args);
+        this.owner.gameServer.ProcessChatCommand(from, args);
     }    
 };
 

@@ -9,7 +9,7 @@ router.get("/get_token/:pass", function(req, res) {
     var pass = req.params.pass;
     
     
-    var token_str =  battleServer.get_token(pass);
+    var token_str =  battleServer.GetToken(pass);
     var token = {
         token :  token_str,
         fetch_url : "http://GAMESERVER:8080/headless/world_state/" + token_str
@@ -22,20 +22,17 @@ router.get("/get_token/:pass", function(req, res) {
 router.get("/world_state/:token", function (req, res) {
    
     var token = req.params.token;
-    var isValid = battleServer.is_token_valid(token);
+    var isValid = battleServer.ValidateToken(token);
      
     res.setHeader('Content-Type:', 'application/json');
      
-    if (!isValid)
-    {
+    if (!isValid) {
        res.end(JSON.stringify({status:"error"}));
     }
-    else
-    {
-        var world_state = battleServer.get_world_state();
+    else {
+        var world_state = battleServer.GetWorldState();
         res.end(JSON.stringify(world_state));
     }
 });
-
 
 module.exports = router;
