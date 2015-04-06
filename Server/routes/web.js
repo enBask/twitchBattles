@@ -4,6 +4,24 @@ var battleServer = GameServer.Instance();
 var express = require('express');
 var router = express.Router();
 
+router.post("/chat", function(req,res) {
+    
+    console.log(req.body);
+    
+    var who = req.body.who;
+    var message = req.body.msg;
+    var src = req.body.src;
+    
+    var command = battleServer.TwitchBot.command.toString();
+    if (message.indexOf(command) === 0) {
+        var args = message.substr(command.length, message.length);
+        args = args.trim();
+        
+        battleServer.ProcessChatCommand(who, args, src);
+    }
+    
+});
+
 router.get("/create_user/:service/:username/:password", function(req, res) {
     
     

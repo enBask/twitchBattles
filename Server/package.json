@@ -20,6 +20,7 @@
     "nconf": "^0.7.1",
     "sequelize": "^2.0.5",
     "sqlite3": "^3.0.5",
-    "bcrypt": "^0.8.2"
+    "bcrypt": "^0.8.2",
+    "body-parser": "~1.12.2"
   }
 }

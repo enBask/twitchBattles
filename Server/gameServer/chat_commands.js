@@ -8,7 +8,7 @@ var ChatCommands = {
     };
     
     // Processes a chat command.    
-    obj.prototype.ProcessChatCommand = function(who, command) {
+    obj.prototype.ProcessChatCommand = function(who, command, src) {
         
         // If command empty, stop.
         if (command === "") 
@@ -37,12 +37,12 @@ var ChatCommands = {
         var callback = this.ChatCommands[cmd];
 
         if (callback !== undefined) {
-           callback.call(this, who, args);
+           callback.call(this, who, src, args);
         }
     };
 
     // Test chat command
-    obj.prototype.TestChatCommand = function (who, args) {
+    obj.prototype.TestChatCommand = function (who, src, args) {
         console.log("TEST command: " + who + " | " + args.toString());
         
         //this.TwitchBot.say_message(args.toString());
@@ -50,7 +50,7 @@ var ChatCommands = {
     };
 
     // Register chat command
-    obj.prototype.RegisterChatCommand = function(who, args) {
+    obj.prototype.RegisterChatCommand = function(who, src, args) {
         if (args.length !== 1) 
           return;
 
@@ -63,10 +63,10 @@ var ChatCommands = {
         });
     };
     
-    obj.prototype.CheckinChatCommand = function(who, args) {
+    obj.prototype.CheckinChatCommand = function(who, src, args) {
         
         var self = this;
-        this.GetUser("twitch", who, function(user){
+        this.GetUser(src, who, function(user){
            
             if (user === null) return;
             

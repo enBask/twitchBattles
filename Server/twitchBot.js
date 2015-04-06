@@ -59,7 +59,7 @@ twitchBot.prototype.get_message = function(from, channel, message) {
         var args = message.substr(command.length, message.length);
         args = args.trim();
         
-        this.owner.gameServer.ProcessChatCommand(from, args);
+        this.owner.gameServer.ProcessChatCommand(from, args, "twitch");
     }    
 };
 
