@@ -1,5 +1,7 @@
 var GameServer = require("../gameServer/server.js");
 var battleServer = GameServer.Instance();
+var bodyParser = require('body-parser');
+var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 var express = require('express');
 var router = express.Router();

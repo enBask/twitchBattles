@@ -58,7 +58,7 @@ var ChatCommands = {
         this.ActivateUser("twitch", who, args[0], function(result) {
             if (result)
             {
-                self.TwitchBot.say_message(who + " is now registered.");
+                self.TwitchBot.say_message(who + " is now registered for battle!");
             }
         });
     };
@@ -72,7 +72,7 @@ var ChatCommands = {
             
             if (self.CheckinForRound(user))
             {
-                self.TwitchBot.say_message(who + " is checked in");                        
+                self.TwitchBot.say_message(who + " is checked in for the next battle!");                        
             }
         });
     };
