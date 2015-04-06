@@ -2,14 +2,18 @@ var fs = require('fs');
 var nconf = require('nconf');
 var path = require('path');
 var express = require('express');
+var bodyParser = require('body-parser');
 var app = express();
 
+<<<<<<< HEAD
 // Set default views path for the web pages
 app.set('views', path.join(__dirname, 'views'));
 // Set the view rendering engine.
 app.set('view engine', 'jade');
 // Allow files in /public to be served as is (for css, js etc.)
 app.use('/public', express.static(path.join(__dirname, 'public')));
+=======
+>>>>>>> enBask/development
 
 //load up env based config file.
 nconf.set('game_server_password', 'password');
@@ -30,10 +34,14 @@ var battleServer = GameServer.Instance();
 //load up routes once globals are created
 var godotRoutes = require("./routes/godot.js");
 var webRoutes = require("./routes/web.js");
+
+app.use(bodyParser.json({}));
 app.use("/headless", godotRoutes);
 app.use(webRoutes);
 
-var server = app.listen(nconf.get("game_server_port"), function() {
+
+var port = nconf.get("game_server_port");
+var server = app.listen(port, function() {
    
     var host = server.address().address;
     var port = server.address().port;
