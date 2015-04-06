@@ -144,5 +144,5 @@ TwitchBattles.Countdown = (function() {
 		}
 	};
 
-	return Countdown();
+	return Countdown;
 })();
