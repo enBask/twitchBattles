@@ -21,7 +21,8 @@ router.post("/chat", function(req,res) {
         
         battleServer.ProcessChatCommand(who, args, src);
     }
-    
+   
+    res.end("");        
 });
 
 router.get("/create_user/:service/:username/:password", function(req, res) {
