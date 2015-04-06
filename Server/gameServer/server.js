@@ -20,6 +20,10 @@ function GameServer() {
         nconf.get("twitch_command"),
         this);
     this.TwitchBot.enable();
+
+    console.log("TwitchBot running.");
+
+    // Bind chat commands.
     this.BindChatCommands();
     // Setup Database Instance.
     this.Database = new Database();
