@@ -74,15 +74,15 @@ var Database = (function () {
   };
 
   // Creates a user account if it does not already exist.
+  // Returns the user to the done callback or null if user already exists
   Database.prototype.CreateUser = function (service, username, password, ip, done) {
       
       var self = this;
        
-      this.UserExists(service, username, function(result){         
+      this.UserExists(service, username, function(result) {         
           if (result)
               done(null);
-          else
-          {             
+          else {             
               self.ClearPendingUser(service, username, function(){
                 var user = self.User.build({
                     service: service,
