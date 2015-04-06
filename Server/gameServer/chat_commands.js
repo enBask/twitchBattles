@@ -10,6 +10,9 @@ var ChatCommands = {
     // Processes a chat command.    
     obj.prototype.ProcessChatCommand = function(who, command, src) {
         
+        //convert all users to lowercase.
+        who = who.toLowerCase();
+        
         // If command empty, stop.
         if (command === "") 
           return; 
