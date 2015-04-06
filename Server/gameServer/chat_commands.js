@@ -55,7 +55,7 @@ var ChatCommands = {
           return;
 
         var self = this;
-        this.ActivateUser("twitch", who, args[0], function(result) {
+        this.ActivateUser(src, who, args[0], function(result) {
             if (result)
             {
                 self.TwitchBot.say_message(who + " is now registered for battle!");
