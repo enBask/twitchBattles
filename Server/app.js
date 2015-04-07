@@ -27,6 +27,7 @@ nconf.argv()
 
 var GameServer = require("./gameServer/server.js");
 var battleServer = GameServer.Instance();
+battleServer.startRound();
 
 //load up routes once globals are created
 var godotRoutes = require("./routes/godot.js");

@@ -8,8 +8,6 @@ var router = express.Router();
 
 router.post("/chat", function(req,res) {
     
-    console.log(req.body);
-    
     var who = req.body.who;
     var message = req.body.msg;
     var src = req.body.src;
@@ -21,7 +19,8 @@ router.post("/chat", function(req,res) {
         
         battleServer.ProcessChatCommand(who, args, src);
     }
-    
+   
+    res.end("");        
 });
 
 router.get("/create_user/:service/:username/:password", function(req, res) {
