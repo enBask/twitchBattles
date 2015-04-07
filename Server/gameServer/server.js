@@ -2,9 +2,12 @@ var Database = require("./orm/db.js");
 var TwitchBot = require("../twitchBot.js");
 var nconf = require('nconf');
 
+var Player = require("./player.js")
+var GameMap = require("./map.js");
+
+
 var ChatCommands = require("./chat_commands.js");
 var AuthCommands = require("./auth.js");
-
 AuthCommands.bind(GameServer);
 ChatCommands.bind(GameServer);
 
@@ -27,9 +30,10 @@ function GameServer() {
     this.BindChatCommands();
     // Setup Database Instance.
     this.Database = new Database();
-    
-    
-    this.users = [];
+       
+    this.round_active = false;
+    this.players = [];
+    this.GameMap = new GameMap();    
 }
 
 // Gets the current instance of the GameServer - Use this instead of the constructor above.
@@ -60,34 +64,63 @@ GameServer.prototype.ValidateToken = function (token) {
 
 // Gets the current world state.
 GameServer.prototype.GetWorldState = function () {
-    
-    var user_names = [];
-    this.users.forEach(function(user){
-       user_names.push(user.username); 
-    });
-    
+       
     var world = {
         status: "OK",
-        checked_in: user_names       
+        players: this.players
     };
     return world;
 };
 
-GameServer.prototype.CheckinForRound = function (user) {
+GameServer.prototype.GetPlayer = function(ormUser) {
     
-    for(i = 0; i < this.users.length; ++i )
+    for(i = 0; i < this.players.length; ++i )
     {
-        var chk = this.users[i];
-        if (chk.username === user.username)
+        var chk = this.players[i];
+        if (chk.username === ormUser.username)
         {
-            return false;
-        }      
+            return chk;
+        }              
     }
     
-    this.users.push(user);
-    return true;
+    var chk = new Player(ormUser);
+    this.players.push(chk);
+    return chk;
+};
+
+GameServer.prototype.CheckinForRound = function (user) {
     
-}
+    var player = this.GetPlayer(user);
+    
+    if (player.checkedIn) return false;
+    
+    player.checkedIn = true;
+    return true;
+};
+
+GameServer.prototype.isRoundActive = function() {
+    return this.round_active;
+};
+
+GameServer.prototype.setRoundActive = function(flag) {
+    this.round_active = flag;
+};
+
+GameServer.prototype.startRound = function(){
+
+    var self = GameServer.Instance();
+    self.setRoundActive(true);
+    self.TwitchBot.say_message("Round is now active for 60 seconds! input commands.");
+    setTimeout( function(){
+        
+        self.setRoundActive(false);
+        self.TwitchBot.say_message("Round is now closed, free to !battle checkin");
+        
+        setTimeout(self.startRound, 10000);
+        
+    },30000);
+      
+};
 
 // Holds the instance of the GameServer
 GameServer._instance = null;
