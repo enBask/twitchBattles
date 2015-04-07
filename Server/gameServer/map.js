@@ -54,10 +54,13 @@ GameMap.prototype.isLocationValid = function(x, y) {
 };
 
 
-GameMap.prototype.addPlayer = function(player, x, y) {
+GameMap.prototype.addPlayer = function(player) {
     
     if (this.playerExists(player)) return;  
     this.players.push(player);
+    
+    var x = Math.floor((Math.random * width));
+    var y = Math.floor((Math.random * height));
     
     this.movePlayer(player, x, y);
         

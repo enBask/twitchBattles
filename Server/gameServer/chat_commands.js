@@ -78,7 +78,7 @@ var ChatCommands = {
             if (self.CheckinForRound(user))
             {
                 var player = self.GetPlayer(user);                
-                self.GameMap.addPlayer(player, 0, 0);
+                self.GameMap.addPlayer(player);
                 
                 self.TwitchBot.say_message(who + " is checked in for the next battle!");                        
             }
