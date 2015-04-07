@@ -59,8 +59,8 @@ GameMap.prototype.addPlayer = function(player) {
     if (this.playerExists(player)) return;  
     this.players.push(player);
     
-    var x = Math.floor((Math.random * width));
-    var y = Math.floor((Math.random * height));
+    var x = Math.floor((Math.random * this.width));
+    var y = Math.floor((Math.random * this.height));
     
     this.movePlayer(player, x, y);
         
