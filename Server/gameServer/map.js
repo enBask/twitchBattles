@@ -59,8 +59,8 @@ GameMap.prototype.addPlayer = function(player) {
     if (this.playerExists(player)) return;  
     this.players.push(player);
     
-    var x = Math.floor((Math.random * this.width));
-    var y = Math.floor((Math.random * this.height));
+    var x = Math.floor(Math.random * (this.width-1));
+    var y = Math.floor(Math.random * (this.height-1));
     
     this.movePlayer(player, x, y);
         
@@ -73,6 +73,8 @@ GameMap.prototype.movePlayer = function(player, x, y) {
     this.unsetPlayer(player);
     
     var pos = this.lookupLocation(x,y);
+    if (pos === undefined)
+        pos = 0;
     var players = this.locations[pos];
     players.push(player);
     
