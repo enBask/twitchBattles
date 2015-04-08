@@ -4,7 +4,7 @@ head
     |         
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
     |         
-    title Twitch Battles - Login | Are you ready?
+    title Twitch Battles - Download | Are you ready?
     |         
     link(href='http://fonts.googleapis.com/css?family=Open+Sans:400,300', rel='stylesheet', type='text/css')
     |         
@@ -13,7 +13,7 @@ head
     link(rel='stylesheet', href='/public/css/twitchbattles.css')
     |         
     script(src='/public/js/vendor/modernizr.js')
-    body
+  body
     .row.collapse.small-uncollapse.top-bar
       .large-6.columns
         h1.medium-text-center
@@ -34,43 +34,25 @@ head
           .medium-4.columns.end
             a.button.button-primary(href='/register') Sign Up
     |         
-    .row.collapse.small-uncollapse
-      .medium-6.small-centered.medium-centered.large-centered.columns.banner
+    .row.collapse.small-uncollapse.banner
+      .large-12.columns
         .row
           .large-12.columns
-            h2.small-text-center.medium-text-left.large-text-left Login
+            h2.small-text-center.medium-text-left.large-text-left Hi 
+              = user.username
+              | !
         |                 
         .row.collapse.small-uncollapse
           .large-12.columns
-            form(action='/login' method='POST')
-              .row.collapse
-                .large-12.columns
-                  label
-                    | Username:
-                    input(type='text', name='username', placeholder='Username')
-              |                             
-              .row.collapse
-                .large-12.columns
-                  label
-                    | Password:
-                    input(type='password', name='password', placeholder='********')    
-              .row.collapse
-                .large-12.columns
-                  label
-                    | Service:
-                    select(name='service')
-                      option(value='twitch') Twitch
-                      option(value='lctv') Livecoding.tv                  
-              input.button.button-primary(type='submit', value='Login')
+            p
+              | user stuff to go here eventually.
     |         
     .row.countdown
       .large-12.columns
-        h3 Next battle commences in 1m 27s, are you ready?     
-    script(src='/public/js/vendor/jquery.js')    
-    script(src='/public/js/foundation.min.js')   
-    script(src='/public/js/twitchbattles.js')      
+        h3 Next battle commences in 1m 27s, are you ready?
+    |         
+    script(src='/public/js/vendor/jquery.js')  
+    script(src='/public/js/foundation.min.js')  
+    script(src='/public/js/twitchbattles.js')     
     script.
       $(document).foundation();
-    script.
-      var twitchBattlesLogin = new TwitchBattles.Login();
-

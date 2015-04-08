@@ -2,17 +2,70 @@ var GameServer = require("../gameServer/server.js");
 var battleServer = GameServer.Instance();
 var bodyParser = require('body-parser');
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
+var nconf = require('nconf');
+
+var passport = require('passport');
+var localStrategy = require('passport-local').Strategy;
 
 var express = require('express');
 var router = express.Router();
 
+var session = require('express-session')
+var SequelizeStore = require('connect-session-sequelize')(session.Store);
+
+//router.use(express.cookieParser());
+router.use(session({ secret: nconf.get('session_token'), resave: false, saveUninitialized: false , cookie: { secure: true }, store: new SequelizeStore({ db: battleServer.Database.databaseDriver }) }));
+router.use(passport.initialize());
+router.use(passport.session());
+
+passport.use('login-local', new localStrategy({ passReqToCallback: true, saveUninitialized: false, resave: true }, function(req, username, password, done) {
+
+    var service = req.body.service;
+
+    // TODO: Check user stuff here.
+    battleServer.Login(service, username, password, function(result) { 
+        if (result.status === "FAILED") {
+            // Login failed.
+            done(result.status, null);
+            return;
+        }
+
+        done(null, result.user);
+    });
+
+}));
+
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+    battleServer.GetUser(user.service, user.username, function(result) {
+        if (result !== null) {
+            done(null, result);
+        } else {
+            done(null, null);
+        }
+    });
+});
 
 router.get("/", function(req, res) {
     res.render('index');
 });
 
 router.get("/login", function(req, res) {
+    if (req.isAuthenticated()) {
+        res.redirect('/my-account');
+        return;
+    }    
     res.render('login');
+});
+
+router.get("/logout", function(req, res) {
+    if (req.isAuthenticated()) {
+        req.logout();
+    }
+    res.redirect('/login');
 });
 
 router.get("/register", function(req, res) {
@@ -25,6 +78,15 @@ router.get("/download", function(req, res) {
 
 router.get("/faq", function(req, res) {
     res.render('faq');
+});
+
+router.get("/my-account", function(req, res) {
+    
+    if (req.isAuthenticated()) {
+        res.render('account', { user: req.session.passport.user });
+        return;
+    }
+    res.redirect('/login');
 });
 
 router.post("/register", urlencodedParser, function(req, res) {
@@ -62,7 +124,7 @@ router.post("/register", urlencodedParser, function(req, res) {
 
     // Check data entered - this is done client side, but better to verify serverside as well.
     // TODO: Do this properlly.
-    if (user === "" || pass === "" || passconfirm.trim() === "")
+    if (user === "" || pass === "" || passconfirm === "")
         res.render('register'); 
 
     // Check passwords match
@@ -80,7 +142,7 @@ router.post("/register", urlencodedParser, function(req, res) {
         var created = false;
         
         // Success
-        if (result != null) {
+        if (result !== null) {
             created = true;
             authcode = result.authcode;
             res.render('success', {verification: authcode}); 
@@ -88,9 +150,27 @@ router.post("/register", urlencodedParser, function(req, res) {
         }
 
         // Failed.
-        res.render('failure'); 
+        res.render('registrationfailure'); 
               
     });    
+});
+
+router.post("/login", urlencodedParser, function(req, res, next) {
+
+    passport.authenticate('login-local', function(err, user, info) {
+
+        if (err || !user) {
+            return res.render('login', { error: err });
+        }
+
+        req.login(user, function(error) {
+            if (error) {
+                return res.render('login');
+            }
+            return res.redirect('/my-account');
+        });
+
+    })(req, res, next);
 });
 
 module.exports = router;

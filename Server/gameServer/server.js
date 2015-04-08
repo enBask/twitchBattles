@@ -5,9 +5,9 @@ var nconf = require('nconf');
 var Player = require("./player.js")
 var GameMap = require("./map.js");
 
-
 var ChatCommands = require("./chat_commands.js");
 var AuthCommands = require("./auth.js");
+
 AuthCommands.bind(GameServer);
 ChatCommands.bind(GameServer);
 

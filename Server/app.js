@@ -12,6 +12,7 @@ app.set('view engine', 'jade');
 // Allow files in /public to be served as is (for css, js etc.)
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
+
 //load up env based config file.
 nconf.set('game_server_password', 'password');
 nconf.set('game_server_port', '8080');
@@ -20,6 +21,7 @@ nconf.set('twitch_name', 'test');
 nconf.set('twitch_auth', 'test');
 nconf.set('twitch_channel', '#test');
 nconf.set('twitch_command', '!battle');   
+nconf.set('session_token', 'testtoken'); // Salt for sessions.
 
 nconf.argv()
      .env()

@@ -34,6 +34,16 @@ var Database = (function () {
             }
         });
         this.User.sync();
+        // this.Session = sql.define('Session', { 
+        //   sid: 
+        //     { 
+        //       type: Sequelize.STRING, 
+        //       primaryKey: true 
+        //     }, 
+        //   data: Sequelize.TEXT 
+        // });
+
+        // this.Session.sync();
   };
 
   // Checks if a user already exists. 
