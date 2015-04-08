@@ -23,8 +23,10 @@
     "ircbot": "0.0.5",
     "jade": "~1.9.2",
     "nconf": "^0.7.1",
+    "passport": "^0.2.1",
+    "passport-local": "^1.0.0",
+    "pathfinding": "~0.4.17",
     "sequelize": "^2.0.5",
-    "sqlite3": "^3.0.5",
-    "pathfinding": "~0.4.17"
+    "sqlite3": "^3.0.5"
   }
 }
