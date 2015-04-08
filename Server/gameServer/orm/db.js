@@ -34,16 +34,16 @@ var Database = (function () {
             }
         });
         this.User.sync();
-        // this.Session = sql.define('Session', { 
-        //   sid: 
-        //     { 
-        //       type: Sequelize.STRING, 
-        //       primaryKey: true 
-        //     }, 
-        //   data: Sequelize.TEXT 
-        // });
+        this.Sessions = sql.define('Sessions', { 
+          sid: 
+            { 
+              type: Sequelize.STRING, 
+              primaryKey: true 
+            }, 
+          data: Sequelize.TEXT 
+        });
 
-        // this.Session.sync();
+        this.Sessions.sync();
   };
 
   // Checks if a user already exists. 

@@ -24,7 +24,6 @@ bind: function(obj) {
                 };
 
                 // If a user is returned and password is correct.
-                // TODO: Add last login info here?
                 if (user !== null && this.Database.ValidatePassword(password, user.password)) {
                     loginInfo.user = { id: user.dataValues.id, username: user.dataValues.username, service: user.dataValues.service };
                     loginInfo.status = "OK";
@@ -33,10 +32,6 @@ bind: function(obj) {
                 done(loginInfo);
 
             }.bind(this));
-            //this.Database.ValidatePassword(password, hash);
-            
-            // Try to find user account.
-
         };
 }};
 

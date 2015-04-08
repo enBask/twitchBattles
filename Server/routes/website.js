@@ -13,26 +13,32 @@ var router = express.Router();
 var session = require('express-session')
 var SequelizeStore = require('connect-session-sequelize')(session.Store);
 
-//router.use(express.cookieParser());
-router.use(session({ secret: nconf.get('session_token'), resave: false, saveUninitialized: false , cookie: { secure: true }, store: new SequelizeStore({ db: battleServer.Database.databaseDriver }) }));
+// TODO: Move this so session is only generated when required.
+router.use(session({ 
+    secret: nconf.get('session_token'), 
+    saveUninitialized: false, 
+    resave: false
+    // ,cookie: { 
+    //     secure: true // For some reason this is preventing cookies being set for me.
+    // } 
+    ,store: new SequelizeStore({ 
+        db: battleServer.Database.databaseDriver 
+    }) 
+}));
 router.use(passport.initialize());
 router.use(passport.session());
 
-passport.use('login-local', new localStrategy({ passReqToCallback: true, saveUninitialized: false, resave: true }, function(req, username, password, done) {
-
+passport.use('login-local', new localStrategy({ passReqToCallback: true, saveUninitialized: false, resave: false }, function(req, username, password, done) {
     var service = req.body.service;
-
-    // TODO: Check user stuff here.
+    
     battleServer.Login(service, username, password, function(result) { 
         if (result.status === "FAILED") {
             // Login failed.
             done(result.status, null);
             return;
         }
-
         done(null, result.user);
     });
-
 }));
 
 passport.serializeUser(function(user, done) {
@@ -81,7 +87,6 @@ router.get("/faq", function(req, res) {
 });
 
 router.get("/my-account", function(req, res) {
-    
     if (req.isAuthenticated()) {
         res.render('account', { user: req.session.passport.user });
         return;
@@ -156,17 +161,19 @@ router.post("/register", urlencodedParser, function(req, res) {
 });
 
 router.post("/login", urlencodedParser, function(req, res, next) {
-
-    passport.authenticate('login-local', function(err, user, info) {
-
+    passport.authenticate('login-local', function(err, user, info) {    
+        // If error or no user found.
         if (err || !user) {
             return res.render('login', { error: err });
         }
-
-        req.login(user, function(error) {
+        // Otherwise 'login' i.e. create session and cookie
+        req.login(user, function(error) {           
+            // If there is an error just go back to the login screen.
+            // TODO: put a notice message here.
             if (error) {
                 return res.render('login');
             }
+            // Success, go to the my account page.
             return res.redirect('/my-account');
         });
 
