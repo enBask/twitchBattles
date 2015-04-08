@@ -13,6 +13,9 @@ var router = express.Router();
 var session = require('express-session')
 var SequelizeStore = require('connect-session-sequelize')(session.Store);
 
+var csurf = require('csurf')
+var csrfProtection = csurf();
+
 // TODO: Move this so session is only generated when required.
 router.use(session({ 
     secret: nconf.get('session_token'), 
@@ -27,6 +30,7 @@ router.use(session({
 }));
 router.use(passport.initialize());
 router.use(passport.session());
+
 
 passport.use('login-local', new localStrategy({ passReqToCallback: true, saveUninitialized: false, resave: false }, function(req, username, password, done) {
     var service = req.body.service;
@@ -59,12 +63,12 @@ router.get("/", function(req, res) {
     res.render('index', { title: 'Home', user: req.session.passport.user });
 });
 
-router.get("/login", function(req, res) {
+router.get("/login", csrfProtection, function(req, res) {
     if (req.isAuthenticated()) {
         res.redirect('/my-account');
         return;
     }    
-    res.render('login', { title: 'Login' });
+    res.render('login', { title: 'Login', csrfToken: req.csrfToken() });
 });
 
 router.get("/logout", function(req, res) {
@@ -74,8 +78,8 @@ router.get("/logout", function(req, res) {
     res.redirect('/login');
 });
 
-router.get("/register", function(req, res) {
-    res.render('register', { title: 'Home', user: req.session.passport.user });
+router.get("/register", csrfProtection, function(req, res) {
+    res.render('register', { title: 'Home', user: req.session.passport.user, csrfToken: req.csrfToken() });
 });
 
 router.get("/download", function(req, res) {
@@ -94,7 +98,7 @@ router.get("/my-account", function(req, res) {
     res.redirect('/login');
 });
 
-router.post("/register", urlencodedParser, function(req, res) {
+router.post("/register", urlencodedParser, csrfProtection, function(req, res) {
     
     if (!req.body) {
         res.send('/register');
@@ -160,8 +164,9 @@ router.post("/register", urlencodedParser, function(req, res) {
     });    
 });
 
-router.post("/login", urlencodedParser, function(req, res, next) {
-    passport.authenticate('login-local', function(err, user, info) {    
+router.post("/login", urlencodedParser, csrfProtection, function(req, res, next) {
+    passport.authenticate('login-local', function(err, user, info) {   
+
         // If error or no user found.
         if (err || !user) {
             return res.render('login', { title: 'Login', error: err });
