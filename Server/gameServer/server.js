@@ -67,7 +67,8 @@ GameServer.prototype.GetWorldState = function () {
        
     var world = {
         status: "OK",
-        players: this.players
+        players: this.players,
+        round_active: this.isRoundActive()
     };
     return world;
 };
@@ -109,7 +110,7 @@ GameServer.prototype.setRoundActive = function(flag) {
 GameServer.prototype.startRound = function(){
 
     //TODO move timeouts to config file.
-    
+
     var self = GameServer.Instance();
     self.setRoundActive(true);
     self.TwitchBot.say_message("Round is now active for 60 seconds! input commands.");

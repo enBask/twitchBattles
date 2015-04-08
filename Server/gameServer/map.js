@@ -1,6 +1,6 @@
 function GameMap() {
     
-    this.width = 40;
+    this.width = 30;
     this.height = 22;
     this.players = [];
     this.locations = new Array( this.width * this.height);
@@ -69,6 +69,8 @@ GameMap.prototype.addPlayer = function(player) {
 GameMap.prototype.movePlayer = function(player, x, y) {
     
     if (!this.playerExists(player)) return;
+
+    if (!this.isLocationValid(x,y)) return;
         
     this.unsetPlayer(player);
     
