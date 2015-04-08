@@ -6,11 +6,14 @@ function Player(ormUser) {
     this.username = ormUser.username;
     this.service = ormUser.service;
     this.checkedIn = false;
+
     this.color = {
                r : Math.random(),
                g : Math.random(),
                b : Math.random()
             };
+
+    this.move_speed = 1;
 }
 
 Player.prototype.QueueCommand = function(cmd) {

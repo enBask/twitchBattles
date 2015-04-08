@@ -1,3 +1,6 @@
+var LocationHelper = require('./location.js');
+
+
 function MovementCommand(x, y) {
 
 	this.CommandType = "MovementCommand";
@@ -5,9 +8,20 @@ function MovementCommand(x, y) {
 	this.y = y;
 }
 
+
+
 MovementCommand.prototype.Execute = function(player, gameServer) {
 
-	gameServer.GameMap.movePlayer(player, this.x, this.y);        
+	var mapLocation = gameServer.GameMap.getPosition(player);
+
+	var diffX = Math.abs(mapLocation.x - this.x);
+	var diffY = Math.abs(mapLocation.y - this.y);
+
+	var diff = Math.abs(diffX - diffY);
+	if (diff <= player.move_speed)
+	{
+		gameServer.GameMap.movePlayer(player, this.x, this.y);        
+	}
 }
 
 MovementCommand.Process = function(player, args) {
@@ -18,39 +32,12 @@ MovementCommand.Process = function(player, args) {
 	var mapLocation = this.GameMap.getPosition(player);
 	if (mapLocation === undefined) return false;
 
-	var x = mapLocation.x;
-	var y = mapLocation.y;
+	var new_location = {x:mapLocation.x, y:mapLocation.y};
 
     for(var i =0; i < args.length; ++i)
     {
-    	var dir = args[i].toLowerCase();
-
-		if (dir !== "up" &&
-		dir !== "down" &&
-		dir !== "left" &&
-		dir !== "right"	)
-		{
-			continue;
-		}
-		
-		if (dir === "up")
-		{
-		    y--;
-		}
-		else if (dir ==="down")
-		{
-		    y++;
-		}
-		else if (dir === "left")
-		{
-		    x--;
-		}
-		else if (dir === "right")
-		{
-		    x++;
-		}
-
-		var move_cmd = new MovementCommand(x, y);
+    	new_location = LocationHelper.Lookup(new_location, args[i]);
+		var move_cmd = new MovementCommand(new_location.x, new_location.y);
 		player.QueueCommand(move_cmd);
 	}
          
