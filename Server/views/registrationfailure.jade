@@ -1,0 +1,14 @@
+extends ./layout.jade 
+block content  
+  .row.collapse.small-uncollapse.banner
+    .large-12.columns
+      .row
+        .large-12.columns
+          h2.small-text-center.medium-text-left.large-text-left Registration Failed
+      .row.collapse.small-uncollapse
+        .large-12.columns
+          p Unfortunately there was a problem registering your account. If you have already previously registered an account you can retrieve your password 
+            a(href='/lost-password') here
+      .row.collapse.small-uncollapse.code
+        .large-3.columns.end
+          a.button.button-primary(href='/register') Try again

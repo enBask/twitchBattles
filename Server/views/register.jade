@@ -1,84 +1,42 @@
-doctype html.no-js(lang='en')
-head
-    meta(charset='utf-8')
-    |         
-    meta(name='viewport', content='width=device-width, initial-scale=1.0')
-    |         
-    title Twitch Battles - Register | Are you ready?
-    |         
-    link(href='http://fonts.googleapis.com/css?family=Open+Sans:400,300', rel='stylesheet', type='text/css')
-    |         
-    link(rel='stylesheet', href='/public/css/foundation.css')
-    |         
-    link(rel='stylesheet', href='/public/css/twitchbattles.css')
-    |         
-    script(src='/public/js/vendor/modernizr.js')
-  body
-    .row.collapse.small-uncollapse.top-bar
-      .large-6.columns
-        h1.medium-text-center
-          a(href='/')
-            img(src='/public/img/logo.png', alt='Twitch Battles')
-      |             
-      nav.large-6.columns
-        .row.collapse.small-uncollapse
-          .medium-2.columns
-            a.button.button-secondary(href='/faq') FAQ
-          |                     
-          .medium-3.columns
-            a.button.button-secondary(href='/download') Download
-          |                     
-          .medium-3.columns
-            a.button.button-secondary(href='/login') Login
-          |                     
-          .medium-4.columns.end
-            a.button.button-primary(href='/register') Sign Up
-    |         
-    .row.collapse.small-uncollapse
-      .medium-6.small-centered.medium-centered.large-centered.columns.banner
-        .row
-          .large-12.columns
-            h2.small-text-center.medium-text-left.large-text-left Sign up
-        |                 
-        .row.collapse.small-uncollapse
-          .large-12.columns
-            form(action='/register' method='POST')
-              .row.collapse
-                .large-12.columns
-                  label
-                    | Username:
-                    input(type='text', name='username' placeholder='Twitch or Livecoding.tv username')
-              .row.collapse
-                .large-12.columns
-                  label
-                    | Password:
-                    input(type='password', name='password', placeholder='********')
-              .row.collapse
-                .large-12.columns
-                  label
-                    | Password confirmation:
-                    input(type='password', name='passwordconfirm', placeholder='********')
-              .row.collapse
-                .large-12.columns
-                  label
-                    | Service:
-                    select(name='service')
-                      option(value='twitch') Twitch
-                      option(value='lctv') Livecoding.tv
-              input.button.button-primary(type='submit', href='/register', value='Sign Up')
-              p.password-notice
-                | Please do 
-                strong NOT
-                |  use the same password as your Twitch or Livecoding.tv password!
-            |         
-    .row.countdown
-      .large-12.columns
-        h3 Next battle commences in 1m 27s, are you ready?
-    |         
-    script(src='/public/js/vendor/jquery.js')      
-    script(src='/public/js/foundation.min.js')      
-    script(src='/public/js/twitchbattles.js')       
-    script.
-      $(document).foundation();         
-    script.
-      var twitchBattlesRegistration = new TwitchBattles.Registration();
+extends ./layout.jade 
+block content           
+  .row.collapse.small-uncollapse
+    .medium-6.small-centered.medium-centered.large-centered.columns.banner
+      .row
+        .large-12.columns
+          h2.small-text-center.medium-text-left.large-text-left Sign up
+      |                 
+      .row.collapse.small-uncollapse
+        .large-12.columns
+          form(action='/register' method='POST')
+            .row.collapse
+              .large-12.columns
+                label
+                  | Username:
+                  input(type='text', name='username' placeholder='Twitch or Livecoding.tv username')
+            .row.collapse
+              .large-12.columns
+                label
+                  | Password:
+                  input(type='password', name='password', placeholder='********')
+            .row.collapse
+              .large-12.columns
+                label
+                  | Password confirmation:
+                  input(type='password', name='passwordconfirm', placeholder='********')
+            .row.collapse
+              .large-12.columns
+                label
+                  | Service:
+                  select(name='service')
+                    option(value='twitch') Twitch
+                    option(value='lctv') Livecoding.tv
+            input(type='hidden', name='_csrf', value='#{csrfToken}')
+            input.button.button-primary(type='submit', href='/register', value='Sign Up')
+            p.password-notice
+              | Please do 
+              strong NOT
+              |  use the same password as your Twitch or Livecoding.tv password!
+block scripts
+  script.
+    var twitchBattlesRegistration = new TwitchBattles.Registration();

@@ -2,32 +2,103 @@ var GameServer = require("../gameServer/server.js");
 var battleServer = GameServer.Instance();
 var bodyParser = require('body-parser');
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
+var nconf = require('nconf');
+
+var passport = require('passport');
+var localStrategy = require('passport-local').Strategy;
 
 var express = require('express');
 var router = express.Router();
 
+var session = require('express-session')
+var SequelizeStore = require('connect-session-sequelize')(session.Store);
+
+var csurf = require('csurf')
+var csrfProtection = csurf();
+
+// TODO: Move this so session is only generated when required.
+router.use(session({ 
+    secret: nconf.get('session_token'), 
+    saveUninitialized: false, 
+    resave: false
+    // ,cookie: { 
+    //     secure: true // For some reason this is preventing cookies being set for me.
+    // } 
+    ,store: new SequelizeStore({ 
+        db: battleServer.Database.databaseDriver 
+    }) 
+}));
+router.use(passport.initialize());
+router.use(passport.session());
+
+
+passport.use('login-local', new localStrategy({ passReqToCallback: true, saveUninitialized: false, resave: false }, function(req, username, password, done) {
+    var service = req.body.service;
+    
+    battleServer.Login(service, username, password, function(result) { 
+        if (result.status === "FAILED") {
+            // Login failed.
+            done('Login failed. Please try again.', null);
+            return;
+        }
+        done(null, result.user);
+    });
+}));
+
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+    battleServer.GetUser(user.service, user.username, function(result) {
+        if (result !== null) {
+            done(null, result);
+        } else {
+            done(null, null);
+        }
+    });
+});
 
 router.get("/", function(req, res) {
-    res.render('index');
+    res.render('index', { title: 'Home', user: req.session.passport.user });
 });
 
-router.get("/login", function(req, res) {
-    res.render('login');
+router.get("/login", csrfProtection, function(req, res) {
+    if (req.isAuthenticated()) {
+        res.redirect('/my-account');
+        return;
+    }    
+    res.render('login', { title: 'Login', csrfToken: req.csrfToken() });
 });
 
-router.get("/register", function(req, res) {
-    res.render('register');
+router.get("/logout", function(req, res) {
+    if (req.isAuthenticated()) {
+        req.logout();
+    }
+    res.redirect('/login');
+});
+
+router.get("/register", csrfProtection, function(req, res) {
+    res.render('register', { title: 'Home', user: req.session.passport.user, csrfToken: req.csrfToken() });
 });
 
 router.get("/download", function(req, res) {
-    res.render('download');
+    res.render('download', { title: 'Download', user: req.session.passport.user });
 });
 
 router.get("/faq", function(req, res) {
-    res.render('faq');
+    res.render('faq', { title: 'Faq', user: req.session.passport.user });
 });
 
-router.post("/register", urlencodedParser, function(req, res) {
+router.get("/my-account", function(req, res) {
+    if (req.isAuthenticated()) {
+        res.render('account', { title: 'Account', user: req.session.passport.user });
+        return;
+    }
+    res.redirect('/login');
+});
+
+router.post("/register", urlencodedParser, csrfProtection, function(req, res) {
     
     if (!req.body) {
         res.send('/register');
@@ -62,7 +133,7 @@ router.post("/register", urlencodedParser, function(req, res) {
 
     // Check data entered - this is done client side, but better to verify serverside as well.
     // TODO: Do this properlly.
-    if (user === "" || pass === "" || passconfirm.trim() === "")
+    if (user === "" || pass === "" || passconfirm === "")
         res.render('register'); 
 
     // Check passwords match
@@ -80,7 +151,7 @@ router.post("/register", urlencodedParser, function(req, res) {
         var created = false;
         
         // Success
-        if (result != null) {
+        if (result !== null) {
             created = true;
             authcode = result.authcode;
             res.render('success', {verification: authcode}); 
@@ -88,9 +159,30 @@ router.post("/register", urlencodedParser, function(req, res) {
         }
 
         // Failed.
-        res.render('failure'); 
+        res.render('registrationfailure'); 
               
     });    
+});
+
+router.post("/login", urlencodedParser, csrfProtection, function(req, res, next) {
+    passport.authenticate('login-local', function(err, user, info) {   
+
+        // If error or no user found.
+        if (err || !user) {
+            return res.render('login', { title: 'Login', error: err });
+        }
+        // Otherwise 'login' i.e. create session and cookie
+        req.login(user, function(error) {           
+            // If there is an error just go back to the login screen.
+            // TODO: put a notice message here.
+            if (error) {
+                return res.render('login');
+            }
+            // Success, go to the my account page.
+            return res.redirect('/my-account');
+        });
+
+    })(req, res, next);
 });
 
 module.exports = router;

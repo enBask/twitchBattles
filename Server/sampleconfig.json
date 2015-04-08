@@ -1,0 +1,10 @@
+{
+	"game_server_password": "password",
+	"game_server_port": "8080",
+	"game_server_fetch_url": "http://localhost:8080/headless/world_state/",
+	"twitch_name": "Twitch Battle Bot",
+	"twitch_auth": "YOUR_BOT_ACCOUNT_OAUTH",
+	"twitch_channel": "#[YOUR CHANNEL]",
+	"twitch_command": "!battle",
+	"session_token": "testtoken"
+}

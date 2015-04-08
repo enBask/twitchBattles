@@ -12,6 +12,7 @@ app.set('view engine', 'jade');
 // Allow files in /public to be served as is (for css, js etc.)
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
+
 //load up env based config file.
 nconf.set('game_server_password', 'password');
 nconf.set('game_server_port', '8080');
@@ -20,6 +21,11 @@ nconf.set('twitch_name', 'test');
 nconf.set('twitch_auth', 'test');
 nconf.set('twitch_channel', '#test');
 nconf.set('twitch_command', '!battle');   
+
+// Salt for sessions. 
+// "session_token": "testtoken" in config, should generate this dynamically on app startup?
+// This would mean that if the application is ever restarted sessions will be invalidated - which isn't a bad thing.
+nconf.set('session_token', 'testtoken'); 
 
 nconf.argv()
      .env()
