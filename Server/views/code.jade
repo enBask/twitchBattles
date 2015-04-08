@@ -1,56 +1,26 @@
-doctype html
-head
-  meta(charset='utf-8')
-  meta(name='viewport', content='width=device-width, initial-scale=1.0')
-  title Twitch Battles - Register | Are you ready?
-  link(href='http://fonts.googleapis.com/css?family=Open+Sans:400,300', rel='stylesheet', type='text/css')
-  link(rel='stylesheet', href='/public/css/foundation.css')
-  link(rel='stylesheet', href='/public/css/twitchbattles.css')
-  script(src='/public/js/vendor/modernizr.js')
-.row.collapse.small-uncollapse.top-bar
-  .large-6.columns
-    h1.medium-text-center
-      a(href='/')
-        img(src='/public/img/logo.png', alt='Twitch Battles')
-  nav.large-6.columns
-    .row.collapse.small-uncollapse
-      .medium-2.columns
-        a.button.button-secondary(href='/faq') FAQ
-      .medium-3.columns
-        a.button.button-secondary(href='/download') Download
-      .medium-3.columns
-        a.button.button-secondary(href='/login') Login
-      .medium-4.columns.end
-        a.button.button-primary(href='/register') Sign Up
-.row.collapse.small-uncollapse.banner
-  .large-12.columns
-    .row
-      .large-12.columns
-        h2.small-text-center.medium-text-left.large-text-left Success
-    .row.collapse.small-uncollapse
-      .large-12.columns
-        p Thank you for signing up to Twitch Battles. Please find your activation code below.
-    .row.collapse.small-uncollapse.code
-      .large-12.columns
-        h3.wrap-text
-          = verification
-    .row.collapse.small-uncollapse
-      .large-12.columns
-        p
-         | To activate your account, please go back to chat and register for battle with the Twitch Battle bot. You will then get a verification message from the bot confirming your registration.
-    .row.collapse.small-uncollapse.code
-      .large-12.columns
-        p.wrap-text.code
-          | !battle register 
-          = verification
-    .row.collapse.small-uncollapse.code
-      .large-2.columns.end
-        a.button.button-primary(href='/') Home
-.row.countdown
-  .large-12.columns
-    h3 Next battle commences in 1m 27s, are you ready?
-script(src='/public/js/vendor/jquery.js')  
-script(src='/public/js/foundation.min.js')  
-script(src='/public/js/twitchbattles.js')   
-script.
-  $(document).foundation();
+extends ./layout.jade
+block content
+  .row.collapse.small-uncollapse.banner
+    .large-12.columns
+      .row
+        .large-12.columns
+          h2.small-text-center.medium-text-left.large-text-left Success
+      .row.collapse.small-uncollapse
+        .large-12.columns
+          p Thank you for signing up to Twitch Battles. Please find your activation code below.
+      .row.collapse.small-uncollapse.code
+        .large-12.columns
+          h3.wrap-text
+            = verification
+      .row.collapse.small-uncollapse
+        .large-12.columns
+          p
+           | To activate your account, please go back to chat and register for battle with the Twitch Battle bot. You will then get a verification message from the bot confirming your registration.
+      .row.collapse.small-uncollapse.code
+        .large-12.columns
+          p.wrap-text.code
+            | !battle register 
+            = verification
+      .row.collapse.small-uncollapse.code
+        .large-2.columns.end
+          a.button.button-primary(href='/') Home

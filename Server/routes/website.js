@@ -34,7 +34,7 @@ passport.use('login-local', new localStrategy({ passReqToCallback: true, saveUni
     battleServer.Login(service, username, password, function(result) { 
         if (result.status === "FAILED") {
             // Login failed.
-            done(result.status, null);
+            done('Login failed. Please try again.', null);
             return;
         }
         done(null, result.user);
@@ -56,7 +56,7 @@ passport.deserializeUser(function(user, done) {
 });
 
 router.get("/", function(req, res) {
-    res.render('index');
+    res.render('index', { title: 'Home', user: req.session.passport.user });
 });
 
 router.get("/login", function(req, res) {
@@ -64,7 +64,7 @@ router.get("/login", function(req, res) {
         res.redirect('/my-account');
         return;
     }    
-    res.render('login');
+    res.render('login', { title: 'Login' });
 });
 
 router.get("/logout", function(req, res) {
@@ -75,20 +75,20 @@ router.get("/logout", function(req, res) {
 });
 
 router.get("/register", function(req, res) {
-    res.render('register');
+    res.render('register', { title: 'Home', user: req.session.passport.user });
 });
 
 router.get("/download", function(req, res) {
-    res.render('download');
+    res.render('download', { title: 'Download', user: req.session.passport.user });
 });
 
 router.get("/faq", function(req, res) {
-    res.render('faq');
+    res.render('faq', { title: 'Faq', user: req.session.passport.user });
 });
 
 router.get("/my-account", function(req, res) {
     if (req.isAuthenticated()) {
-        res.render('account', { user: req.session.passport.user });
+        res.render('account', { title: 'Account', user: req.session.passport.user });
         return;
     }
     res.redirect('/login');
@@ -164,7 +164,7 @@ router.post("/login", urlencodedParser, function(req, res, next) {
     passport.authenticate('login-local', function(err, user, info) {    
         // If error or no user found.
         if (err || !user) {
-            return res.render('login', { error: err });
+            return res.render('login', { title: 'Login', error: err });
         }
         // Otherwise 'login' i.e. create session and cookie
         req.login(user, function(error) {           
