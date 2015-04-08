@@ -119,9 +119,9 @@ GameServer.prototype.startRound = function(){
         self.setRoundActive(false);
         self.TwitchBot.say_message("Round is now closed, free to !battle checkin");
         self.executeRound();
-        setTimeout(self.startRound, 60000);
+        setTimeout(self.startRound, 10000);
         
-    },60000);
+    },10000);
       
 };
 

@@ -13,7 +13,8 @@ function Player(ormUser) {
                b : Math.random()
             };
 
-    this.move_speed = 1;
+    this.move_speed = 3;
+    this.speed_points = this.move_speed;
 }
 
 Player.prototype.QueueCommand = function(cmd) {
@@ -42,7 +43,8 @@ Player.prototype.ExecuteQueue = function(gameServer) {
         cmd.Execute(self, gameServer);
     });
 
-    this.ClearQueue();
+    this.ClearQueue();  
+    this.speed_points = this.move_speed;
 
 }
 

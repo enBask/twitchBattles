@@ -8,20 +8,36 @@ function MovementCommand(x, y) {
 	this.y = y;
 }
 
-
-
 MovementCommand.prototype.Execute = function(player, gameServer) {
+
+	if (player.speed_points <= 0) return;
 
 	var mapLocation = gameServer.GameMap.getPosition(player);
 
-	var diffX = Math.abs(mapLocation.x - this.x);
-	var diffY = Math.abs(mapLocation.y - this.y);
+	var path = gameServer.GameMap.caluclatePath(mapLocation, this);
+	if (path == null) return;
 
-	var diff = Math.abs(diffX - diffY);
-	if (diff <= player.move_speed)
-	{
-		gameServer.GameMap.movePlayer(player, this.x, this.y);        
+	var prev_node = [mapLocation.x, mapLocation.y];
+	for(var i = 0; i < path.length; ++i) {
+		var node = path[i];
+
+		var diffX = Math.abs(prev_node[0] - node[0]);
+		var diffY = Math.abs(prev_node[1] - node[1]);
+		var diff = Math.abs(diffX - diffY);
+		
+		if (diff <= player.speed_points) {
+			gameServer.GameMap.movePlayer(player, node[0], node[1]);
+			player.speed_points -= diff;        
+		}
+		else {
+			return;
+		}
+
+		prev_node = node;
 	}
+
+
+	
 }
 
 MovementCommand.Process = function(player, args) {
