@@ -108,6 +108,8 @@ GameServer.prototype.setRoundActive = function(flag) {
 
 GameServer.prototype.startRound = function(){
 
+    //TODO move timeouts to config file.
+    
     var self = GameServer.Instance();
     self.setRoundActive(true);
     self.TwitchBot.say_message("Round is now active for 60 seconds! input commands.");
@@ -115,11 +117,23 @@ GameServer.prototype.startRound = function(){
         
         self.setRoundActive(false);
         self.TwitchBot.say_message("Round is now closed, free to !battle checkin");
-        
+        self.executeRound();
         setTimeout(self.startRound, 60000);
         
     },60000);
       
+};
+
+GameServer.prototype.executeRound = function(){
+    
+    for(i = 0; i < this.players.length; ++i )
+    {
+        var player = this.players[i];
+        if (player.checkedIn)
+        {
+            player.ExecuteQueue(this);
+        }
+    }
 };
 
 // Holds the instance of the GameServer
