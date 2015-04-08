@@ -42,6 +42,7 @@ app.use("/web", webRoutes);
 app.use(websiteRoutes);
 
 var port = nconf.get("game_server_port");
+console.log(port);
 var server = app.listen(port, function() {
    
     var host = server.address().address;

@@ -1,3 +1,5 @@
+var GlobalCommands = require("./commands/global_commands.js");
+
 var ChatCommands = {
  
   bind: function(obj) {
@@ -25,7 +27,7 @@ var ChatCommands = {
           return;
             
         // Command is first part
-        var cmd = parts[0];
+        var cmd = parts[0].toLowerCase();
 
         // Arguments, anything after the command.
         var args = [];
@@ -42,14 +44,25 @@ var ChatCommands = {
         if (callback !== undefined) {
            callback.call(this, who, src, args);
         }
-    };
+        else {
 
-    // Test chat command
-    obj.prototype.TestChatCommand = function (who, src, args) {
-        console.log("TEST command: " + who + " | " + args.toString());
-        
-        //this.TwitchBot.say_message(args.toString());
-        
+            //convert who into a player object.
+            var self = this;
+            this.GetUser(src, who, function(user){
+
+                if (user !== null) {
+
+                    var player = self.GetPlayer(user);  
+
+                    if (!GlobalCommands.TryProcessCommand(self, player, cmd, args))
+                    {
+                        //TODO: check players class commnads.
+                    }
+                } 
+            });
+
+            
+        }
     };
 
     // Register chat command
@@ -84,54 +97,6 @@ var ChatCommands = {
             }
         });
     };
-    
-    obj.prototype.MoveChatCommand = function(who, src, args) {
-        
-        if (args.length !== 1) return;
-        if (!this.isRoundActive()) return;
-         
-        var dir = args[0].toLowerCase();
-        
-        if (dir !== "up" &&
-            dir !== "down" &&
-            dir !== "left" &&
-            dir !== "right"
-           )
-            return;
-                
-        var self = this;
-        this.GetUser(src, who, function(user){
-           
-            if (user === null) return;
-            
-            var player = self.GetPlayer(user);
-            
-            var mapLocation = self.GameMap.getPosition(player);
-            if (mapLocation === undefined) return;
-            
-            var x = mapLocation.x;
-            var y = mapLocation.y;
-            if (dir === "up")
-            {
-                y--;
-            }
-            else if (dir ==="down")
-            {
-                y++;
-            }
-            else if (dir === "left")
-            {
-                x--;
-            }
-            else if (dir === "right")
-            {
-                x++;
-            }
-            
-            self.GameMap.movePlayer(player, x, y);        
-                      
-        });
-    }
 
     // Binds all chat commands.
     obj.prototype.BindChatCommands = function() {
@@ -139,10 +104,8 @@ var ChatCommands = {
         this.ChatCommands = {};
 
         // Bind all chat commands.
-        this.BindChatCommand("test", this.TestChatCommand);
         this.BindChatCommand("register", this.RegisterChatCommand);
         this.BindChatCommand("checkin", this.CheckinChatCommand);
-        this.BindChatCommand("move", this.MoveChatCommand);
     };
   }
 };

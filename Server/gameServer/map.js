@@ -1,8 +1,11 @@
+var PF = require('pathfinding');
+
 function GameMap() {
     
-    this.width = 40;
+    this.width = 30;
     this.height = 22;
     this.players = [];
+    this.path_grid = new PF.Grid(30, 22);
     this.locations = new Array( this.width * this.height);
     
     for(var i = 0; i < this.locations.length; i++)
@@ -69,6 +72,8 @@ GameMap.prototype.addPlayer = function(player) {
 GameMap.prototype.movePlayer = function(player, x, y) {
     
     if (!this.playerExists(player)) return;
+
+    if (!this.isLocationValid(x,y)) return;
         
     this.unsetPlayer(player);
     
@@ -88,6 +93,19 @@ GameMap.prototype.movePlayer = function(player, x, y) {
 GameMap.prototype.getPosition = function(player) {    
     return player.MapLocation;    
 };
+
+GameMap.prototype.caluclatePath = function(from, to) {
+
+  if (!this.isLocationValid(from.x, from.y) || !this.isLocationValid(to.x, to.y))
+    return null;
+
+  var grid = this.path_grid.clone();
+  var find = new PF.AStarFinder();
+
+  var path = find.findPath(from.x, from.y, to.x, to.y, grid);
+  path.shift();
+  return path;
+}
 
 module.exports = GameMap;
 
