@@ -30,7 +30,7 @@ function GameServer() {
         this);
     this.TwitchBot.enable();
 
-    if(lctv_bot){
+    if(lctv_bot) {
 
         this.LCTVBot = new lctv_bot(
             nconf.get("lctv_auth_name"),
@@ -39,10 +39,12 @@ function GameServer() {
             nconf.get("lctv_channel"),
             nconf.get("twitch_command"),
             this);
+
+        console.log("LCTV Bot running.");
     }
 
     console.log("TwitchBot running.");
-    console.log("LCTV Bot running.");
+    
 
     // Bind chat commands.
     this.BindChatCommands();
@@ -190,7 +192,7 @@ GameServer.prototype.createGame = function() {
     this.players = [];
     this.GameMap = new GameMap();  
 
-    this.say_message("TwitchBattle game has been created !battle checkin to play.");
+    this.say_message("TwitchBattle game has been created !battle join to play.");
 
 };
 

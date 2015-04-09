@@ -71,7 +71,7 @@ var ChatCommands = {
            
             if (user === null) return;
            
-            if (user.username != "whilke") {
+            if (user.username !== "whilke" && user.username !== "danjeeeee") {
                 return;
             }
             self.createGame();
@@ -85,7 +85,7 @@ var ChatCommands = {
            
             if (user === null) return;
            
-            if (user.username != "whilke") {
+            if (user.username != "whilke" && user.username !== "danjeeeee") {
                 return;
             }
             self.startGame();
@@ -168,6 +168,9 @@ var ChatCommands = {
         this.BindChatCommand("start", this.StartChatCommand);
         this.BindChatCommand("end", this.EndChatCommand);
         this.BindChatCommand("clear", this.ClearChatCommand);
+
+        // TODO
+        // this.BindChatCommand("commands", this.CommandsChatCommand);
     };
   }
 };

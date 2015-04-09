@@ -301,11 +301,11 @@ TwitchBattles.Countdown = (function() {
 
 	Countdown.prototype.decrementCountdown = function() {
 
-		var blah = setInterval(function() {
+		setInterval(function() {
 			if (this.countdown > 1)
 				this.countdown--;
 
-			// Reget the fields, incase the game countdown field isn't in the dom when this is called.
+			// Reset the fields, incase the game countdown field isn't in the dom when this is called.
 			this.getFields();
 
 			this.countdownTime.text(this.getFriendlyCountdownText(this.countdown));
