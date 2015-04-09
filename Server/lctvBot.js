@@ -10,6 +10,12 @@ function lctvBot(twitch_user, twitch_pass, username, channel, command, gameServe
 	console.log("LCTV Bot activated.");
 
 	this.bot.on('error', function (err) {
+
+		if (err == "xml parsing ERROR") {
+			self.bot.disconnect();
+			self.bot.connect();
+			return;
+		}
 		console.log("LCTV Bot error : " + err);
 	});
 
