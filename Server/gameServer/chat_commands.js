@@ -52,7 +52,7 @@ var ChatCommands = {
 
                 if (user !== null) {
 
-                    var player = self.GetPlayer(user);  
+                    var player = self.GetPlayer(user, true);  
 
                     if (!GlobalCommands.TryProcessCommand(self, player, cmd, args))
                     {
@@ -63,6 +63,48 @@ var ChatCommands = {
 
             
         }
+    };
+
+    obj.prototype.CreateChatCommand = function(who, src, args) {
+        var self = this;
+        this.GetUser(src, who, function(user){
+           
+            if (user === null) return;
+           
+            if (user.username != "whilke") {
+                return;
+            }
+            self.createGame();
+            
+        });
+    };
+
+    obj.prototype.StartChatCommand = function(who, src, args) {
+        var self = this;
+        this.GetUser(src, who, function(user){
+           
+            if (user === null) return;
+           
+            if (user.username != "whilke") {
+                return;
+            }
+            self.startGame();
+            
+        });
+    };
+
+     obj.prototype.EndChatCommand = function(who, src, args) {
+        var self = this;
+        this.GetUser(src, who, function(user){
+           
+            if (user === null) return;
+
+            if (user.username != "whilke") {
+                return;
+            }
+            self.endGame();
+            
+        });
     };
 
     // Register chat command
@@ -81,7 +123,7 @@ var ChatCommands = {
     
     obj.prototype.CheckinChatCommand = function(who, src, args) {
         
-        if (this.isRoundActive()) return;
+        if (!this.canCheckIn()) return;
         
         var self = this;
         this.GetUser(src, who, function(user){
@@ -90,7 +132,7 @@ var ChatCommands = {
             
             if (self.CheckinForRound(user))
             {
-                var player = self.GetPlayer(user);                
+                var player = self.GetPlayer(user, true);                
                 self.GameMap.addPlayer(player);
                 
                 self.TwitchBot.say_message(who + " is checked in for the next battle!");                        
@@ -106,6 +148,9 @@ var ChatCommands = {
         // Bind all chat commands.
         this.BindChatCommand("register", this.RegisterChatCommand);
         this.BindChatCommand("checkin", this.CheckinChatCommand);
+        this.BindChatCommand("create", this.CreateChatCommand);
+        this.BindChatCommand("start", this.StartChatCommand);
+        this.BindChatCommand("end", this.EndChatCommand);
     };
   }
 };

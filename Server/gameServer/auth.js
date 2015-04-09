@@ -13,6 +13,9 @@ bind: function(obj) {
         obj.prototype.GetUser = function (service, username, done) {
             this.Database.UserExists(service, username.toLowerCase(), done);
         };
+        obj.prototype.GetUserIndirect = function(username, done) {
+            this.Database.UserIndirect(username.toLowerCase(), done);
+        }
 
         obj.prototype.Login = function (service, username, password, done) {
 

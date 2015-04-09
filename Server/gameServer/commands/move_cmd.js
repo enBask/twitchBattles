@@ -54,7 +54,7 @@ MovementCommand.Process = function(player, args) {
     {
     	new_location = LocationHelper.Lookup(new_location, args[i]);
 		var move_cmd = new MovementCommand(new_location.x, new_location.y);
-		player.QueueCommand(move_cmd);
+		player.QueueCommand(move_cmd, true);
 	}
          
 	return true;

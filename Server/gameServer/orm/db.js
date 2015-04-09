@@ -7,6 +7,7 @@ var Database = (function () {
   // Constructor
   function Database() {
         var sql = new Sequelize('', '', '', {
+            logging: false,
             dialect: 'sqlite',
             storage: './twitchBattle.sqlite'
         });
@@ -33,7 +34,7 @@ var Database = (function () {
                 defaultValue: false
             }
         });
-        this.User.sync();
+       
         this.Sessions = sql.define('Sessions', { 
           sid: 
             { 
@@ -43,6 +44,7 @@ var Database = (function () {
           data: Sequelize.TEXT 
         });
 
+        this.User.sync();
         this.Sessions.sync();
   };
 
@@ -51,6 +53,17 @@ var Database = (function () {
       this.User.find({
           where: {
               service: service,
+              username: username,
+              active: true
+          }
+      }).then(function (user) {
+         done( user );
+      });
+  };
+
+  Database.prototype.UserIndirect = function (username, done) {
+      this.User.find({
+          where: {
               username: username,
               active: true
           }

@@ -86,7 +86,21 @@ GameMap.prototype.movePlayer = function(player, x, y) {
     player.MapLocation = {
         index : pos,
         x : x,
-        y :y
+        y :y,
+        location: function() {
+
+          var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+          var len = alphabet.length;
+          var data = "";
+          if (y >= len) {
+            data = alphabet[i / len - 1] + alphabet[i % len];
+          }
+          else {
+            data = alphabet[y];
+          }
+
+          return data + (x+1);
+        }  
     };
 };
 

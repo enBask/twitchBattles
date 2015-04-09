@@ -30,8 +30,12 @@ function GameServer() {
     this.BindChatCommands();
     // Setup Database Instance.
     this.Database = new Database();
-       
+
+    this.game_active = false; 
+    this.checkin_active = false;      
     this.round_active = false;
+    this.round_timer = 0;
+    this.round_timer_id = 0;
     this.players = [];
     this.GameMap = new GameMap();    
 }
@@ -62,18 +66,47 @@ GameServer.prototype.ValidateToken = function (token) {
     return (token === this.Token);
 };
 
+GameServer.prototype.ExtractPlayers = function () {
+
+    var player_data = [];
+    this.players.forEach(function(player){
+
+        player_data.push({
+            username: player.username,
+            service: player.service,
+            checkedin: player.checkedIn,
+            active: player.active,
+            color: player.color,
+            hitpoints: player.hitpoints,
+            x: player.MapLocation.x,
+            y: player.MapLocation.y,
+            location: player.MapLocation.location()
+        });
+    });
+
+    return player_data;
+};
+
 // Gets the current world state.
 GameServer.prototype.GetWorldState = function () {
        
+    var now = new Date().getTime();
+    var round_timer = 0;
+    if (this.round_timer > 0)
+        round_timer = (now - this.round_timer) / 1000;
+
     var world = {
         status: "OK",
-        players: this.players,
-        round_active: this.round_active
+        players: this.ExtractPlayers(),
+        game_active: this.game_active,
+        round_active: this.round_active,
+        checkin_active: this.checkin_active,
+        round_timer: round_timer
     };
     return world;
 };
 
-GameServer.prototype.GetPlayer = function(ormUser) {
+GameServer.prototype.GetPlayer = function(ormUser, addToGame) {
     
     for(i = 0; i < this.players.length; ++i )
     {
@@ -83,21 +116,31 @@ GameServer.prototype.GetPlayer = function(ormUser) {
             return chk;
         }              
     }
+
+    if (addToGame) {
+        var chk = new Player(ormUser);
+        this.players.push(chk);
+        return chk;
+    }
+    else {
+        return null;
+    }
     
-    var chk = new Player(ormUser);
-    this.players.push(chk);
-    return chk;
 };
 
 GameServer.prototype.CheckinForRound = function (user) {
     
-    var player = this.GetPlayer(user);
+    var player = this.GetPlayer(user, true);
     
     if (player.checkedIn) return false;
     
     player.checkedIn = true;
     return true;
 };
+
+GameServer.prototype.canCheckIn = function() {
+    return this.checkin_active;
+}
 
 GameServer.prototype.isRoundActive = function() {
     return this.round_active;
@@ -107,19 +150,57 @@ GameServer.prototype.setRoundActive = function(flag) {
     this.round_active = flag;
 };
 
+GameServer.prototype.createGame = function() {
+
+    if (this.game_active) return;
+
+    this.game_active = true;
+    this.checkin_active = true;
+    this.players = [];
+    this.GameMap = new GameMap();  
+
+    this.TwitchBot.say_message("TwitchBattle game has been created !battle checkin to play.");
+
+};
+
+GameServer.prototype.startGame = function() {
+
+    if (!this.game_active) return;
+
+    this.checkin_active = false;
+
+    this.startRound();
+};
+
+GameServer.prototype.endGame = function() {
+    if (!this.game_active) return;
+    
+    this.game_active = false;
+    this.round_active = false;
+    this.checkin_active = false;
+
+    this.round_timer = 0;
+    clearTimeout(this.round_timer_id);
+
+    this.TwitchBot.say_message("TwitchBattle game has ended.");
+
+}
+
 GameServer.prototype.startRound = function(){
 
     //TODO move timeouts to config file.
 
     var self = GameServer.Instance();
     self.setRoundActive(true);
+    self.round_timer = new Date().getTime();
     self.TwitchBot.say_message("Round is now active for 60 seconds! input commands.");
-    setTimeout( function(){
+    self.round_timer_id = setTimeout( function(){
         
         self.setRoundActive(false);
-        self.TwitchBot.say_message("Round is now closed, free to !battle checkin");
+        self.TwitchBot.say_message("Round is now closed, updating world state");
         self.executeRound();
-        setTimeout(self.startRound, 60000);
+        self.round_timer = new Date().getTime();
+        self.round_timer_id = setTimeout(self.startRound, 60000);
         
     },60000);
       
@@ -127,12 +208,34 @@ GameServer.prototype.startRound = function(){
 
 GameServer.prototype.executeRound = function(){
     
+    //execute everyone's actions before allowing anyone to move.
     for(i = 0; i < this.players.length; ++i )
     {
         var player = this.players[i];
         if (player.checkedIn)
         {
-            player.ExecuteQueue(this);
+            player.ExecuteQueue(this, false);
+        }
+    }
+
+    //execute movement afterwords.
+    for(i = 0; i < this.players.length; ++i )
+    {
+        var player = this.players[i];
+        if (player.checkedIn)
+        {
+            player.ExecuteQueue(this, true);
+        }
+    }
+
+    //check for deaths and remove!
+    var i = this.players.length;
+    while(i--)
+    {
+        var player = this.players[i];
+        if (!player.isActive())
+        {
+            this.players.splice(i, 1);            
         }
     }
 };
