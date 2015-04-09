@@ -21,7 +21,8 @@ nconf.set('twitch_name', 'test');
 nconf.set('twitch_auth', 'test');
 nconf.set('twitch_channel', '#test');
 nconf.set('twitch_command', '!battle');   
-
+nconf.set('round_length', 60);   
+nconf.set('between_round_length', 60);   
 // Salt for sessions. 
 // "session_token": "testtoken" in config, should generate this dynamically on app startup?
 // This would mean that if the application is ever restarted sessions will be invalidated - which isn't a bad thing.

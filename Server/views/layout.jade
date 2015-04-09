@@ -43,7 +43,8 @@ head
     block content         
     .row.countdown
       .large-12.columns
-        h3 Next battle commences in 1m 27s, are you ready?
+        h3.game-status No battles are available at this time, please check back later.
+          span.game-countdown 
     |         
     script(src='/public/js/vendor/jquery.js') 
     script(src='/public/js/foundation.min.js') 
@@ -52,3 +53,5 @@ head
     block scripts
     script.
       jQuery(document).foundation();
+    script.
+      var TwitchBattlesCountdown = new TwitchBattles.Countdown('#{gamestate_url}');

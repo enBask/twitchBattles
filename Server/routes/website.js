@@ -10,10 +10,10 @@ var localStrategy = require('passport-local').Strategy;
 var express = require('express');
 var router = express.Router();
 
-var session = require('express-session')
+var session = require('express-session');
 var SequelizeStore = require('connect-session-sequelize')(session.Store);
 
-var csurf = require('csurf')
+var csurf = require('csurf');
 var csrfProtection = csurf();
 
 // TODO: Move this so session is only generated when required.
@@ -60,15 +60,17 @@ passport.deserializeUser(function(user, done) {
 });
 
 router.get("/", function(req, res) {
-    res.render('index', { title: 'Home', user: req.session.passport.user });
+    var url = nconf.get('game_server_fetch_url') + 'token';
+    res.render('index', { title: 'Home', user: req.session.passport.user, gamestate_url: url });
 });
 
 router.get("/login", csrfProtection, function(req, res) {
     if (req.isAuthenticated()) {
         res.redirect('/my-account');
         return;
-    }    
-    res.render('login', { title: 'Login', csrfToken: req.csrfToken() });
+    }
+    var url = nconf.get('game_server_fetch_url') + 'token';
+    res.render('login', { title: 'Login', gamestate_url: url, csrfToken: req.csrfToken() });
 });
 
 router.get("/logout", function(req, res) {
@@ -79,20 +81,24 @@ router.get("/logout", function(req, res) {
 });
 
 router.get("/register", csrfProtection, function(req, res) {
-    res.render('register', { title: 'Home', user: req.session.passport.user, csrfToken: req.csrfToken() });
+    var url = nconf.get('game_server_fetch_url') + 'token';
+    res.render('register', { title: 'Home', user: req.session.passport.user, gamestate_url: url, csrfToken: req.csrfToken() });
 });
 
 router.get("/download", function(req, res) {
-    res.render('download', { title: 'Download', user: req.session.passport.user });
+    var url = nconf.get('game_server_fetch_url') + 'token';
+    res.render('download', { title: 'Download', gamestate_url: url, user: req.session.passport.user });
 });
 
 router.get("/faq", function(req, res) {
-    res.render('faq', { title: 'Faq', user: req.session.passport.user });
+    var url = nconf.get('game_server_fetch_url') + 'token';
+    res.render('faq', { title: 'Faq', gamestate_url: url, user: req.session.passport.user });
 });
 
 router.get("/my-account", function(req, res) {
     if (req.isAuthenticated()) {
-        res.render('account', { title: 'Account', user: req.session.passport.user });
+        var url = nconf.get('game_server_fetch_url') + 'token';
+        res.render('account', { title: 'Account', gamestate_url: url, user: req.session.passport.user });
         return;
     }
     res.redirect('/login');

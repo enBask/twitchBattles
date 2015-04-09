@@ -6,5 +6,7 @@
 	"twitch_auth": "YOUR_BOT_ACCOUNT_OAUTH",
 	"twitch_channel": "#[YOUR CHANNEL]",
 	"twitch_command": "!battle",
-	"session_token": "testtoken"
+	"session_token": "testtoken",
+	"round_length": 60,
+	"between_round_length": 120
 }

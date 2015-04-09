@@ -24,8 +24,6 @@ function GameServer() {
         this);
     this.TwitchBot.enable();
 
-    console.log("TwitchBot running.");
-
     // Bind chat commands.
     this.BindChatCommands();
     // Setup Database Instance.
@@ -36,6 +34,8 @@ function GameServer() {
     this.round_active = false;
     this.round_timer = 0;
     this.round_timer_id = 0;
+    this.round_length = nconf.get("round_length");
+    this.between_round_length = nconf.get("between_round_length");
     this.players = [];
     this.GameMap = new GameMap();    
 }
@@ -90,10 +90,11 @@ GameServer.prototype.ExtractPlayers = function () {
 // Gets the current world state.
 GameServer.prototype.GetWorldState = function () {
        
-    var now = new Date().getTime();
-    var round_timer = 0;
-    if (this.round_timer > 0)
-        round_timer = (now - this.round_timer) / 1000;
+     var now = new Date().getTime();
+     var round_timer = 0;
+     if (this.round_timer > 0) {
+         round_timer = (now - this.round_timer) / 1000;
+     }
 
     var world = {
         status: "OK",
@@ -101,7 +102,9 @@ GameServer.prototype.GetWorldState = function () {
         game_active: this.game_active,
         round_active: this.round_active,
         checkin_active: this.checkin_active,
-        round_timer: round_timer
+        round_timer: round_timer,
+        between_round_length: this.between_round_length,
+        round_length: this.round_length
     };
     return world;
 };
@@ -188,21 +191,23 @@ GameServer.prototype.endGame = function() {
 
 GameServer.prototype.startRound = function(){
 
-    //TODO move timeouts to config file.
-
     var self = GameServer.Instance();
+
+    var round_length = self.round_length * 1000;
+    var between_round_length = self.between_round_length * 1000;
+    
     self.setRoundActive(true);
     self.round_timer = new Date().getTime();
-    self.TwitchBot.say_message("Round is now active for 60 seconds! input commands.");
+    self.TwitchBot.say_message("Round is now active for " + self.getFriendlyCountdownText(self.round_length) + "! input commands.");
     self.round_timer_id = setTimeout( function(){
         
         self.setRoundActive(false);
-        self.TwitchBot.say_message("Round is now closed, updating world state");
+        self.TwitchBot.say_message("Round is now closed, updating world state. Next round starts in " + self.getFriendlyCountdownText(self.between_round_length) + "!");
         self.executeRound();
         self.round_timer = new Date().getTime();
-        self.round_timer_id = setTimeout(self.startRound, 60000);
+        self.round_timer_id = setTimeout(self.startRound, between_round_length);
         
-    },60000);
+    }, round_length );
       
 };
 
@@ -239,6 +244,21 @@ GameServer.prototype.executeRound = function(){
         }
     }
 };
+
+GameServer.prototype.getFriendlyCountdownText = function(seconds) {
+
+        var hours = Math.floor(seconds / 3600);
+        var minutes = Math.floor((seconds - (hours * 3600)) / 60);
+        var secs = seconds - (hours * 3600) - (minutes * 60);
+
+
+        var time = (hours > 0 ? hours + " hours " : "");
+            time += (minutes > 0 ? minutes + " minutes " : "");
+            time += (secs > 0 ? secs + " seconds" : "");
+
+        return time.trim();
+
+    };
 
 // Holds the instance of the GameServer
 GameServer._instance = null;
