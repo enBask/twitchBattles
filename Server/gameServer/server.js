@@ -11,6 +11,12 @@ var AuthCommands = require("./auth.js");
 AuthCommands.bind(GameServer);
 ChatCommands.bind(GameServer);
 
+if (nconf.get("lctv_enabled") == true) {
+    var lctv_bot = require("../lctvBot.js");
+}
+
+
+
 // Constructor - Do not use externally - can't make this private unfortunately.
 function GameServer() {
     // Generate Token
@@ -23,6 +29,17 @@ function GameServer() {
         nconf.get("twitch_command"),
         this);
     this.TwitchBot.enable();
+
+    if(lctv_bot){
+
+        this.LCTVBot = new lctv_bot(
+            nconf.get("lctv_auth_name"),
+            nconf.get("lctv_auth_pass"),
+            nconf.get("lctv_username"),
+            nconf.get("lctv_channel"),
+            nconf.get("twitch_command"),
+            this);
+    }
 
     console.log("TwitchBot running.");
 
@@ -39,6 +56,14 @@ function GameServer() {
     this.players = [];
     this.GameMap = new GameMap();    
 }
+
+GameServer.prototype.say_message = function(message) {
+    this.TwitchBot.say_message(message);
+    if (this.LCTVBot) {
+        this.LCTVBot.say_message(message);
+    }
+};
+
 
 // Gets the current instance of the GameServer - Use this instead of the constructor above.
 GameServer.Instance = function () {
@@ -159,7 +184,7 @@ GameServer.prototype.createGame = function() {
     this.players = [];
     this.GameMap = new GameMap();  
 
-    this.TwitchBot.say_message("TwitchBattle game has been created !battle checkin to play.");
+    this.say_message("TwitchBattle game has been created !battle checkin to play.");
 
 };
 
@@ -182,7 +207,7 @@ GameServer.prototype.endGame = function() {
     this.round_timer = 0;
     clearTimeout(this.round_timer_id);
 
-    this.TwitchBot.say_message("TwitchBattle game has ended.");
+    this.say_message("TwitchBattle game has ended.");
 
 }
 
@@ -193,11 +218,11 @@ GameServer.prototype.startRound = function(){
     var self = GameServer.Instance();
     self.setRoundActive(true);
     self.round_timer = new Date().getTime();
-    self.TwitchBot.say_message("Round is now active for 60 seconds! input commands.");
+    self.say_message("Round is now active for 60 seconds! input commands.");
     self.round_timer_id = setTimeout( function(){
         
         self.setRoundActive(false);
-        self.TwitchBot.say_message("Round is now closed, updating world state");
+        self.say_message("Round is now closed, updating world state");
         self.executeRound();
         self.round_timer = new Date().getTime();
         self.round_timer_id = setTimeout(self.startRound, 60000);

@@ -21,6 +21,12 @@ nconf.set('twitch_name', 'test');
 nconf.set('twitch_auth', 'test');
 nconf.set('twitch_channel', '#test');
 nconf.set('twitch_command', '!battle');   
+nconf.set('lctv_auth_name', 'test');
+nconf.set('lctv_auth_pass', 'b@test');
+nconf.set('lctv_username', 'test');
+nconf.set('lctv_channel', 'test');
+nconf.set('lctv_enabled', 'false');
+
 
 // Salt for sessions. 
 // "session_token": "testtoken" in config, should generate this dynamically on app startup?
@@ -45,7 +51,6 @@ app.use("/web", webRoutes);
 app.use(websiteRoutes);
 
 var port = nconf.get("game_server_port");
-console.log(port);
 var server = app.listen(port, function() {
    
     var host = server.address().address;
