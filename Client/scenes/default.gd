@@ -3,21 +3,22 @@ extends Node2D
 
 var webClient = preload("res://scripts/httpClient.gd")
 
-var labelNode
+var timer_label_node
+var player_label_node
 var timerNode
-var lblTimer
 var mapNode
 var web = null
 var update_url
 var player_sprites = []
 var current_round_state = false
+var round_time = 0
 func _ready():
 	# Initialization here
 	
-	labelNode = get_node("Label")
+	timer_label_node = get_node("timer_label")
+	player_label_node = get_node("player_label")
 	timerNode = get_node("Timer")
 	mapNode = get_node("TileMap")
-	lblTimer = get_node("lblTimer")
 	
 	build_grid_labels()
 	
@@ -30,9 +31,6 @@ func on_init_server(data):
 	if (err == OK):
 		update_url = d["fetch_url"];
 		timerNode.start()
-	
-
-
 
 
 func _on_Timer_timeout():
@@ -47,25 +45,30 @@ func on_fetch_server(data):
 	var d = {}
 	var err = d.parse_json(data)
 	if (err == OK):
+	
+		if (d["game_active"] == false):
+			timer_label_node.hide()
+			return
+		
 		clear_map()
+		player_label_node.set_text("");
 		var players = d["players"]
 		for player in players:
 			render_player(player)
 			
-	timerNode.start()
-	
-	var round_active = d["round_active"];
-	
-	if (round_active != current_round_state):
-		labelNode.show()
-		if (round_active):
-			labelNode.set_text("Round active for 60s, input commands now")
-			lblTimer.start()
+		var round_active = d["round_active"];
+		var checkin_active = d["checkin_active"];
+		round_time = 60 - round( float(d["round_timer"]))
+		
+		timer_label_node.show()
+		if (checkin_active):
+			timer_label_node.set_text("Game created.   !battle join to play");
+		elif (round_active):
+			timer_label_node.set_text("Round active for " + str(round_time) +"s, input commands now");
 		else:
-			labelNode.set_text("Between rounds...you can now !battle checkin to play")
-			lblTimer.start()
-			
-	current_round_state = round_active
+			timer_label_node.set_text("Round inactive for " + str(round_time) +"s, please wait.");
+		
+	timerNode.start()
 
 func clear_map():
 	for sprite in player_sprites:
@@ -75,13 +78,10 @@ func clear_map():
 	
 func render_player(player):
 	var name = player["username"];
-	
-	if (!player.has("MapLocation")):
-		return
-	
-	var location = player["MapLocation"];
-	var x = location["x"];
-	var y = location["y"];
+		
+	var x = player["x"];
+	var y = player["y"];
+	var location = player["location"];
 	var color = player["color"]
 	
 	var sprite = Sprite.new();
@@ -102,6 +102,13 @@ func render_player(player):
 	sprite.add_child(lbl);
 	
 	player_sprites.push_back(sprite)
+	
+	#update player info panel.
+	var txt = player_label_node.get_text();
+	
+	txt = txt + name + " ["+ location +"]" + " HP: " + str(player["hitpoints"]) +"\r\n"
+	player_label_node.set_text(txt)
+	
 
 func build_grid_labels():
 	var map_pos = mapNode.get_pos()
@@ -139,10 +146,4 @@ func build_grid_labels():
 		lbl2.set_text(data)
 		lbl2.set_pos( Vector2( map_pos.x+width+8, map_pos.y + (i * 32) + 8) )
 		add_child(lbl2)
-	
 
-
-func _on_lblTimer_timeout():
-	labelNode.hide()
-	lblTimer.stop()
-	pass # replace with function body
