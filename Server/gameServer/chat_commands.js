@@ -140,6 +140,22 @@ var ChatCommands = {
         });
     };
 
+    obj.prototype.ClearChatCommand = function(who, src, args) {
+
+        var self = this;
+        this.GetUser(src, who, function(user){
+           
+            if (user === null) return;
+            var player = self.GetPlayer(user, false); 
+            if (player === null)  return; 
+
+            player.ClearQueue(true);
+            player.ClearQueue(false);
+           
+        });
+
+    };
+
     // Binds all chat commands.
     obj.prototype.BindChatCommands = function() {
 
@@ -147,10 +163,11 @@ var ChatCommands = {
 
         // Bind all chat commands.
         this.BindChatCommand("register", this.RegisterChatCommand);
-        this.BindChatCommand("checkin", this.CheckinChatCommand);
+        this.BindChatCommand("join", this.CheckinChatCommand);
         this.BindChatCommand("create", this.CreateChatCommand);
         this.BindChatCommand("start", this.StartChatCommand);
         this.BindChatCommand("end", this.EndChatCommand);
+        this.BindChatCommand("clear", this.ClearChatCommand);
     };
   }
 };

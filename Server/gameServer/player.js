@@ -70,6 +70,10 @@ Player.prototype.ClearQueue = function(isMovement) {
 
     if (isMovement){
         this.MovementQueue = [];
+        
+        if (isMovement) {
+            this.speed_points = this.move_speed;
+        }
     }
     else {
         this.CommandQueue = [];
@@ -86,9 +90,7 @@ Player.prototype.ExecuteQueue = function(gameServer, isMovement) {
     });
 
     this.ClearQueue(isMovement);  
-    if (isMovement) {
-        this.speed_points = this.move_speed;
-    }
+    
 };
 
 module.exports = Player;
