@@ -23,7 +23,7 @@ MovementCommand.prototype.Execute = function(player, gameServer) {
 
 		var diffX = Math.abs(prev_node[0] - node[0]);
 		var diffY = Math.abs(prev_node[1] - node[1]);
-		var diff = Math.abs(diffX - diffY);
+		var diff =  diffX + diffY;
 		
 		if (diff <= player.speed_points) {
 			gameServer.GameMap.movePlayer(player, node[0], node[1]);

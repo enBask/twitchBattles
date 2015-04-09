@@ -10,7 +10,7 @@ function AttackCommand(player) {
 function map_distance(a, b) {
 	var diffX = Math.abs(b.x - a.x);
 	var diffY = Math.abs(b.y - a.y);
-	var diff = Math.abs(diffX - diffY);
+	var diff = diffX + diffY;
 	return diff;
 }
 

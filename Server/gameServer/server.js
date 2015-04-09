@@ -78,9 +78,9 @@ GameServer.prototype.ExtractPlayers = function () {
             active: player.active,
             color: player.color,
             hitpoints: player.hitpoints,
-            x: player.MapLocation.x,
-            y: player.MapLocation.y,
-            location: player.MapLocation.location()
+            x: player.MapLocation ? player.MapLocation.x : 0,
+            y: player.MapLocation ? player.MapLocation.y : 0,
+            location: player.MapLocation ? player.MapLocation.location() : "A1"
         });
     });
 
