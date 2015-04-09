@@ -1,12 +1,17 @@
 {
-	"game_server_password": "password",
-	"game_server_port": "8080",
-	"game_server_fetch_url": "http://localhost:8080/headless/world_state/",
-	"twitch_name": "Twitch Battle Bot",
-	"twitch_auth": "YOUR_BOT_ACCOUNT_OAUTH",
-	"twitch_channel": "#[YOUR CHANNEL]",
-	"twitch_command": "!battle",
-	"session_token": "testtoken",
-	"round_length": 60,
+	"game_server_password": "password":
+	"game_server_port": "8080":
+	"game_server_fetch_url": "http://localhost:8080/headless/world_state/":
+	"twitch_name": "Twitch Battle Bot":
+	"twitch_auth": "YOUR_BOT_ACCOUNT_OAUTH":
+	"twitch_channel": "#[YOUR CHANNEL]":
+	"twitch_command": "!battle":
+	"session_token": "testtoken":
+	"round_length": 60:
 	"between_round_length": 120
+	"lctv_auth_name": "test",
+	"lctv_auth_pass": "b@test",
+	"lctv_username": "test",
+	"lctv_channel": "test",
+	"lctv_enabled": "false"
 }
