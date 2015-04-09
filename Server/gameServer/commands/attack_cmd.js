@@ -38,10 +38,10 @@ AttackCommand.Process = function(player, args) {
            
 	    if (user === null) return;
 
-	    var player = self.GetPlayer(user, false);
-	    if (player === null) return;
+	    var attacked_player = self.GetPlayer(user, false);
+	    if (attacked_player === null) return;
 
-	    var attack_cmd = new AttackCommand(player);
+	    var attack_cmd = new AttackCommand(attacked_player);
 	    player.QueueCommand(attack_cmd, false);
 	               
     });         
