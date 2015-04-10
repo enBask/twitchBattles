@@ -79,8 +79,7 @@ twitchBot.prototype.say_throttle = function (func, t, ctx) {
                   else { 
                       timeout = false; 
                   }
-	  }
-	  ;
+	  };
 	
 	var f = function() {
 		var message = arguments[0]
