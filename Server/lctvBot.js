@@ -26,13 +26,6 @@ lctvBot.prototype.init = function() {
 
 	this.bot.on('message', function (from, message) {
 
-		if (from == "whilke")
-		{
-			self.say_message(message);
-			self.say_message(message);
-			return;
-		}
-
 		var command = self.command.toString();
     	if (message.indexOf(command) === 0) {
 
