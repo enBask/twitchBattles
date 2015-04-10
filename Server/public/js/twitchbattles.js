@@ -16,10 +16,10 @@ TwitchBattles.Registration = (function() {
 	// using jQuery as it's already loaded with Foundation, or would do this natively.
 	Registration.prototype.getFields = function() {
 		this.formElement = jQuery('form');
-        this.usernameElement = jQuery('input[name="username"]');
-        this.passwordElement = jQuery('input[name="password"]');
-        this.passwordconfirmElement = jQuery('input[name="passwordconfirm"]');
-        this.submitElement = jQuery('input[type="submit"]');
+		this.usernameElement = jQuery('input[name="username"]');
+		this.passwordElement = jQuery('input[name="password"]');
+		this.passwordconfirmElement = jQuery('input[name="passwordconfirm"]');
+		this.submitElement = jQuery('input[type="submit"]');
 	};
 
 	Registration.prototype.addEventHanlders = function() {
@@ -65,7 +65,7 @@ TwitchBattles.Registration = (function() {
 		if (!usernameValid || !passwordValid || !passwordconfirmValid)
 			return false;
 
-        return true;
+		return true;
 
 	};
 
@@ -127,9 +127,9 @@ TwitchBattles.Login = (function() {
 
 	Login.prototype.getFields = function() {
 		this.formElement = jQuery('form');
-        this.usernameElement = jQuery('input[name="username"]');
-        this.passwordElement = jQuery('input[name="password"]');
-        this.submitElement = jQuery('input[type="submit"]');
+		this.usernameElement = jQuery('input[name="username"]');
+		this.passwordElement = jQuery('input[name="password"]');
+		this.submitElement = jQuery('input[type="submit"]');
 	};
 
 	Login.prototype.addEventHanlders = function() {
@@ -168,7 +168,7 @@ TwitchBattles.Login = (function() {
 		if (!usernameValid || !passwordValid)
 			return false;
 
-        return true;
+		return true;
 
 	};
 
@@ -221,28 +221,111 @@ TwitchBattles.Login = (function() {
 TwitchBattles.Countdown = (function() {
 
 	// Contstructor
-	function Countdown() {
+	function Countdown(url) {
+		
+		// Set defaults
+		this.countdown = 0;
+		this.worldState = {};
+		this.url = url;
 		this.getFields();
-		this.timeRemaining = this.getTimeUntilNextBattle();
-		this.populateField();
+		
+		// Get world state on intial load.
+		this.getWorldState(this.url);
+
+		this.decrementCountdown();
+
 	}
 
 	// Retrieve time until next battle
-	Countdown.prototype.getTimeUntilNextBattle = function() {
-		// TODO Get time until next battle from server.
+	Countdown.prototype.getWorldState = function(url) {
+		jQuery.get(url, function(data) {
+			
+			this.worldState = data;
+
+			// Setup next world state update
+			this.scheduleNextWorldStateUpdate();
+
+			this.populateField();
+
+		}.bind(this));
 	};
 
 	// Get the field that will show the time until next battle.
 	Countdown.prototype.getFields = function() {
-		this.timeRemainingField = jQuery('.timeRemaining');
+		this.countdownText = jQuery('.game-status');
+		this.countdownTime = jQuery('.game-countdown');
 	};
 
 	// Retrieve time until next battle
 	Countdown.prototype.populateField = function() {
-		if (this.timeRemainingField !== null && this.timeRemainingField.length > 0) {
+		if (this.countdownText !== null && this.countdownText.length > 0) {
 			
-			// Use clientside to do countdown, and re-poll server when countdown reaches 0 etc etc.
+			// Game not active.
+			if (!this.worldState.game_active) {
+				this.countdownText.html('No battles are available at this time, please check back later.');
+			} else if (!this.worldState.round_active) {
+				// Round not active, next round in XXs
+				this.countdown = (this.worldState.between_round_length - this.worldState.round_timer).toFixed(0);
+				this.countdownText.html('Next battle commences in <span class="game-countdown">' + this.getFriendlyCountdownText(this.countdown) + '</span>, are you ready?');
+			} else {
+				// Round active, next round in XXs
+				this.countdown = (this.worldState.round_length - this.worldState.round_timer).toFixed(0);
+				this.countdownText.html('Battle in progress, next round starts in <span class="game-countdown">' + this.getFriendlyCountdownText(this.countdown) + '</span>.');
+			}
+
+			
 		}
+	};
+
+	// This will schedule the next world state update. This will get the world state at the end of the round.
+	Countdown.prototype.scheduleNextWorldStateUpdate = function() {
+
+		// Clear existing timeout.
+		if (this.timeoutId > 0)
+			clearTimeout(this.timeoutId);
+
+		if (this.worldState.round_timer > 0) {
+			var refresh = (this.countdown * 1000);
+			
+			if (refresh < 0) {
+				refresh = 60000;
+			}
+
+			this.timeoutId = setTimeout(this.getWorldState.bind(this), refresh, this.url);
+		}
+
+		if (!this.worldState.game_active) {
+			this.timeoutId = setTimeout(this.getWorldState.bind(this), 60000, this.url);
+		}
+	};
+
+	Countdown.prototype.decrementCountdown = function() {
+
+		setInterval(function() {
+			if (this.countdown > 1)
+				this.countdown--;
+
+			// Reset the fields, incase the game countdown field isn't in the dom when this is called.
+			this.getFields();
+
+			this.countdownTime.text(this.getFriendlyCountdownText(this.countdown));
+
+		}.bind(this), 1000);
+	};
+
+	Countdown.prototype.getFriendlyCountdownText = function(countdown) {
+
+		var hours = Math.floor(countdown / 3600);
+		var minutes = Math.floor((countdown - (hours * 3600)) / 60);
+		var seconds = countdown - (hours * 3600) - (minutes * 60);
+
+
+		var time = (hours > 0 ? hours + "h " : "");
+			time += (minutes > 0 ? minutes + "m " : "");
+			time += (seconds > 0 ? seconds + "s" : "");
+
+		return time.trim();
+
 	};
 
 	return Countdown;
