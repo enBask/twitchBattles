@@ -63,7 +63,7 @@ function GameServer() {
 }
 
 GameServer.prototype.say_message = function(message) {
-    this.say_message(message);
+    this.TwitchBot.say_message(message);
     if (this.LCTVBot) {
         this.LCTVBot.say_message(message);
     }
