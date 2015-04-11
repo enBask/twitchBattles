@@ -81,7 +81,7 @@ lctvBot.prototype.say_throttle = function (func, t, ctx) {
 	
 	var f = function() {
 		var message = arguments[0]
-		  , i = function(data) {
+		  , iFunc = function(data) {
 			func.call(ctx, data);
 		};
 		if(timeout && timeout._idleNext) {
@@ -106,14 +106,14 @@ lctvBot.prototype.say_throttle = function (func, t, ctx) {
                     {
                         queue.push({
                             msg: message,
-                            func: i
+                            func: iFunc
                         });
                     }
                     
 		} else {
     		        queue.push({
                             msg: message,
-                            func: i
+                            func: iFunc
                         });
 			timeout = setTimeout(qf, t);
 		}
