@@ -116,7 +116,7 @@ var ChatCommands = {
         this.ActivateUser(src, who, args[0], function(result) {
             if (result)
             {
-                self.TwitchBot.say_message(who + " is now registered for battle!");
+                self.say_message(who + " is now registered for battle!");
             }
         });
     };
@@ -135,7 +135,7 @@ var ChatCommands = {
                 var player = self.GetPlayer(user, true);                
                 self.GameMap.addPlayer(player);
                 
-                self.TwitchBot.say_message(who + " is checked in for the next battle!");                        
+                self.say_message(who + " is checked in for the next battle!");                        
             }
         });
     };

@@ -9,10 +9,7 @@ lctvBot.prototype.init = function() {
 
 	console.log("LCTV Bot activated.");
 
-	this.bot.on('error', function (err) {
-
-		console.log("LCTV Bot error : " + err);		
-	});
+	this.bot.on('error', this.error);
 
 	this.bot.on('offline', this.offline);
 
@@ -39,6 +36,12 @@ lctvBot.prototype.init = function() {
 
 
 	this.bot.connect();
+};
+
+lctvBot.prototype.error = function(reason) {
+		console.log("LCTV Bot is error : " + reason);
+
+		this.owner.init();
 };
 
 lctvBot.prototype.offline = function(reason) {

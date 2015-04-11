@@ -64,7 +64,10 @@ function GameServer() {
 
 GameServer.prototype.say_message = function(message) {
     this.TwitchBot.say_message(message);
+    console.log(message);
+    console.log( this.LCTVBot == null)
     if (this.LCTVBot) {
+        console.log(message);
         this.LCTVBot.say_message(message);
     }
 };
