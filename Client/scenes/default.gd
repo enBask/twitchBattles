@@ -5,6 +5,7 @@ var webClient = preload("res://scripts/httpClient.gd")
 
 var timer_label_node
 var player_label_node
+var log_label_node
 var timerNode
 var mapNode
 var web = null
@@ -17,6 +18,7 @@ func _ready():
 	
 	timer_label_node = get_node("timer_label")
 	player_label_node = get_node("player_label")
+	log_label_node = get_node("log_label");
 	timerNode = get_node("Timer")
 	mapNode = get_node("TileMap")
 	
@@ -49,24 +51,37 @@ func on_fetch_server(data):
 		if (d["game_active"] == false):
 			timer_label_node.hide()
 			return
+			
+		var log_data = ""
+		for entry in d["round_log"]:
+			log_data = log_data + entry +"\r\n"
+			
+		log_label_node.set_text(log_data)
 		
 		clear_map()
-		player_label_node.set_text("");
+		player_label_node.set_text("")
 		var players = d["players"]
 		for player in players:
 			render_player(player)
 			
-		var round_active = d["round_active"];
-		var checkin_active = d["checkin_active"];
-		round_time = 60 - round( float(d["round_timer"]))
+		var round_active = d["round_active"]
+		var checkin_active = d["checkin_active"]
+		var round_length = d["round_length"]
+		var between_round_length = d["between_round_length"]
+		
+		var length = round_length
+		if (!round_active):
+			length = between_round_length
+			
+		round_time = length - round( float(d["round_timer"]))
 		
 		timer_label_node.show()
 		if (checkin_active):
 			timer_label_node.set_text("Game created.   !battle join to play");
 		elif (round_active):
-			timer_label_node.set_text("Round active for " + str(round_time) +"s, input commands now");
+			timer_label_node.set_text("Round active for " + str(round_time) +"s, input commands now")
 		else:
-			timer_label_node.set_text("Round inactive for " + str(round_time) +"s, please wait.");
+			timer_label_node.set_text("Round inactive for " + str(round_time) +"s, please wait.")
 		
 	timerNode.start()
 
@@ -77,36 +92,38 @@ func clear_map():
 	player_sprites.clear()
 	
 func render_player(player):
-	var name = player["username"];
+	print(player)
+	var name = player["username"]
+	var number = player["number"]
 		
-	var x = player["x"];
-	var y = player["y"];
-	var location = player["location"];
+	var x = player["x"]
+	var y = player["y"]
+	var location = player["location"]
 	var color = player["color"]
 	
-	var sprite = Sprite.new();
+	var sprite = Sprite.new()
 	var tex = ResourceLoader.load("res://images/player2_placeholder.png")
 	sprite.set_texture( tex )
 	
-	var map_pos = mapNode.get_pos();
+	var map_pos = mapNode.get_pos()
 	sprite.set_pos( map_pos + Vector2( x * 32 + 16, y * 32 + 16) )
 	
 	sprite.set_modulate( Color(float(color["r"]), float(color["g"]), float(color["b"])))
 	add_child(sprite)
 	
-	var lbl = Label.new();
-	lbl.set_text(name);	
-	lbl.add_color_override("font_color", Color(0.2,0.2,0.2,1) )
-	lbl.set_pos( Vector2(-20, -8) )
+	var lbl = Label.new()
+	lbl.set_text(str(number));
+	lbl.add_color_override("font_color", Color(1.0,0,0,1) )
+	lbl.set_pos( Vector2(-7,-7) )
 	lbl.set_align(Label.ALIGN_CENTER);
 	sprite.add_child(lbl);
 	
 	player_sprites.push_back(sprite)
 	
 	#update player info panel.
-	var txt = player_label_node.get_text();
+	var txt = player_label_node.get_text()
 	
-	txt = txt + name + " ["+ location +"]" + " HP: " + str(player["hitpoints"]) +"\r\n"
+	txt = txt + "["+ str(number) +"]" + name + " ["+ location +"]" + " HP: " + str(player["hitpoints"]) +"\r\n"
 	player_label_node.set_text(txt)
 	
 
