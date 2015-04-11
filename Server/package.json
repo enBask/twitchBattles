@@ -28,6 +28,7 @@
     "passport-local": "^1.0.0",
     "pathfinding": "~0.4.17",
     "sequelize": "^2.0.5",
-    "sqlite3": "^3.0.5"
+    "sqlite3": "^3.0.5",
+    "rekuire": "~0.1.9"
   }
 }

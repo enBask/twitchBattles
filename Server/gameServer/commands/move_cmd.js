@@ -40,8 +40,8 @@ MovementCommand.prototype.Execute = function(player, gameServer) {
 		prev_node = node;
 	}
 
-	gameServer.AddLog(player.username + " moved from " + start_location + "to "  + move_log);
-	player.AddLog("moved from " + start_location + "to "  + move_log);
+	gameServer.AddLog(player.username + " moved from " + start_location + " to "  + move_log);
+	player.AddLog("moved from " + start_location + " to "  + move_log);
 	
 }
 

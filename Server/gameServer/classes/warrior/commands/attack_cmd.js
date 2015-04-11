@@ -1,9 +1,8 @@
-var LocationHelper = require('./location.js');
+var LocationHelper = rekuire('gameServer/commands/location.js');
 
 
 function AttackCommand(player) {
 
-	this.CommandType = "AttackCommand";
 	this.attackee = player;
 }
 
@@ -28,13 +27,13 @@ AttackCommand.prototype.Execute = function(player, gameServer) {
 	}
 	else
 	{
-		gameServer.AddLog(player.username + "tried to attack " + this.attackee.username + " and missed");	
+		gameServer.AddLog(player.username + " tried to attack " + this.attackee.username + " and missed");	
 		player.AddLog("tried to attack " + this.attackee.username + " and missed");
 	}
 
 }
 
-AttackCommand.Process = function(player, args) {
+AttackCommand.Process = function(player, args, callback) {
 
 	if (args.length == 0) return;
     if (!this.isRoundActive()) return;
@@ -53,6 +52,7 @@ AttackCommand.Process = function(player, args) {
 
 	    var attack_cmd = new AttackCommand(attacked_player);
 	    player.QueueCommand(attack_cmd, false);
+	    callback(attack_cmd);
 	               
     });         
 	return true;

@@ -1,0 +1,26 @@
+{
+	"name" : "Warrior",
+	"description" : "Warriors are cool",
+
+	"attributes" : {
+		"hitpoints" : 1.5
+	},
+
+	"abilities" : [
+		{
+			"name" : "Attack",
+			"description" : "Attack for hitpoints",
+			"speed": 5,
+			"command" : "attack",
+			"script" : "attack_cmd"
+		},
+		{
+			"name" : "Block",
+			"description" : "Block an attack",
+			"speed": 4,
+			"command" : "block",
+			"script" : "block_cmd"
+		}
+	]
+
+}

@@ -1,6 +1,8 @@
+var extend = require('util')._extend;
 
 function Player(ormUser) {
     
+    this.ClassObject = null;
     this.MapLocation = undefined;
     this.CommandQueue = [];
     this.MovementQueue = [];
@@ -15,11 +17,21 @@ function Player(ormUser) {
                g : Math.random(),
                b : Math.random()
             };
+}
 
-    this.move_speed = 3;
-    this.speed_points = this.move_speed;
+Player.prototype.SetClass = function(classObject) {
+    this.ClassObject = classObject;
+    this.CreateAttributes(this.ClassObject);
+}
 
-    this.hitpoints = 10;
+Player.prototype.CreateAttributes = function(classObject) {
+    
+    this.starting_attributes = require('./default_attributes.json');
+    classObject.apply_attributes(this.starting_attributes);
+
+    this.attributes = extend({}, this.starting_attributes);
+
+    this.speed_points = this.attributes.move_speed;   
 }
 
 Player.prototype.AddLog = function(msg) {
@@ -32,10 +44,10 @@ Player.prototype.ClearLog = function() {
 };
 
 Player.prototype.Hit = function(damage, from) {
-    this.hitpoints -= damage;
-    if (this.hitpoints <=0) this.hitpoints =0;
+    this.attributes.hitpoints -= damage;
+    if (this.attributes.hitpoints <=0) this.attributes.hitpoints =0;
 
-    if (this.hitpoints == 0) {
+    if (this.attributes.hitpoints == 0) {
         this.kill();
     }
 };
@@ -82,12 +94,20 @@ Player.prototype.ClearQueue = function(isMovement) {
         this.MovementQueue = [];
         
         if (isMovement) {
-            this.speed_points = this.move_speed;
+            this.speed_points = this.attributes.move_speed;
         }
     }
     else {
         this.CommandQueue = [];
     }
+};
+
+Player.prototype.GetAndClearQueue = function(isMovement) {
+
+    var queue = isMovement ? this.MovementQueue : this.CommandQueue;
+    var ret_queue = queue.slice(0);
+    this.ClearQueue(isMovement);   
+    return ret_queue;   
 };
 
 Player.prototype.ExecuteQueue = function(gameServer, isMovement) {

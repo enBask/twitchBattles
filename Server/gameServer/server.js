@@ -1,8 +1,13 @@
+var fs = require("fs"),
+path = require("path");
+var PriorityQueue = require("../PriorityQueue.js");
+
 var Database = require("./orm/db.js");
 var TwitchBot = require("../twitchBot.js");
 var nconf = require('nconf');
 
-var Player = require("./player.js")
+var Class = require("./classes/class.js");
+var Player = require("./player/player.js")
 var GameMap = require("./map.js");
 
 var ChatCommands = require("./chat_commands.js");
@@ -21,6 +26,9 @@ if (nconf.get("lctv_enabled") == true) {
 function GameServer() {
     // Generate Token
     this.Token = this.GenerateToken();
+
+    this.LoadClasses();
+
     // Setup Twitch Bot Instance.
     this.TwitchBot = new TwitchBot(
         nconf.get("twitch_name"),
@@ -65,10 +73,7 @@ function GameServer() {
 
 GameServer.prototype.say_message = function(message) {
     this.TwitchBot.say_message(message);
-    console.log(message);
-    console.log( this.LCTVBot == null)
     if (this.LCTVBot) {
-        console.log(message);
         this.LCTVBot.say_message(message);
     }
 };
@@ -109,6 +114,33 @@ GameServer.prototype.ClearLog = function() {
     this.RoundLog = [];
 };
 
+GameServer.prototype.LoadClasses = function () {
+    this.classMap = [];
+    var self = this;
+
+    var class_path = "./gameServer/classes";
+    fs.readdir(class_path, function(err, files) {
+
+        if (err) {
+            throw err;
+        }
+
+        files.map(function (file) {
+            return path.join(class_path, file);
+        }).filter(function (file) {
+            return fs.statSync(file).isDirectory();
+        }).forEach(function (file) {
+
+            var folder_path = file.replace("gameServer/", "./");
+            file = folder_path + "/package.json";
+            var classdata = require(file);
+            classdata.folder_path = folder_path.replace("./classes/", "./");
+            self.classMap[classdata.name] = classdata;
+        });
+
+    });
+}
+
 GameServer.prototype.ExtractPlayers = function () {
 
     var player_data = [];
@@ -121,7 +153,7 @@ GameServer.prototype.ExtractPlayers = function () {
             checkedin: player.checkedIn,
             active: player.active,
             color: player.color,
-            hitpoints: player.hitpoints,
+            attributes: player.attributes,
             x: player.MapLocation ? player.MapLocation.x : 0,
             y: player.MapLocation ? player.MapLocation.y : 0,
             location: player.MapLocation ? player.MapLocation.location() : "A1",
@@ -168,6 +200,10 @@ GameServer.prototype.GetPlayer = function(ormUser, addToGame) {
 
     if (addToGame) {
         var chk = new Player(ormUser);
+
+        var className = new Class("Warrior", this.classMap["Warrior"]);
+        chk.SetClass(className);
+
         this.players.push(chk);
         return chk;
     }
@@ -268,15 +304,27 @@ GameServer.prototype.startRound = function(){
 
 GameServer.prototype.executeRound = function(){
     
-    //execute everyone's actions before allowing anyone to move.
-    for(i = 0; i < this.players.length; ++i )
-    {
-        var player = this.players[i];
+    var pQueue = new PriorityQueue("speed", 0);
+    //execute everyone's actions before allowing anyone to move
+    this.players.forEach(function(player) {
+
         if (player.checkedIn)
         {
-            player.ExecuteQueue(this, false);
+            var q = player.GetAndClearQueue(false);
+            q.forEach(function(command) {
+                command.player = player;
+                pQueue.insert(command);
+            });
         }
+    });
+
+    while(pQueue.length > 0) {
+
+        var cmd = pQueue.shiftHighestPriorityElement();
+        cmd.Execute(cmd.player, this);
     }
+
+
 
     //execute movement afterwords.
     for(i = 0; i < this.players.length; ++i )

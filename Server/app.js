@@ -1,3 +1,4 @@
+global.rekuire = require('rekuire');
 var fs = require('fs');
 var nconf = require('nconf');
 var path = require('path');

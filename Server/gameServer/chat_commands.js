@@ -56,7 +56,8 @@ var ChatCommands = {
 
                     if (!GlobalCommands.TryProcessCommand(self, player, cmd, args))
                     {
-                        //TODO: check players class commnads.
+                        var classObject = player.ClassObject;
+                        classObject.TryProcessCommand(self, player, cmd, args);
                     }
                 } 
             });
