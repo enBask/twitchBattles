@@ -63,7 +63,7 @@ function GameServer() {
 }
 
 GameServer.prototype.say_message = function(message) {
-    this.TwitchBot.say_message(message);
+    this..say_message(message);
     if (this.LCTVBot) {
         this.LCTVBot.say_message(message);
     }
@@ -229,11 +229,11 @@ GameServer.prototype.startRound = function(){
     self.setRoundActive(true);
     self.round_timer = new Date().getTime();
 
-    self.TwitchBot.say_message("Round is now active for " + self.getFriendlyCountdownText(self.round_length) + "! input commands.");
+    self..say_message("Round is now active for " + self.getFriendlyCountdownText(self.round_length) + "! input commands.");
     self.round_timer_id = setTimeout( function(){
         
         self.setRoundActive(false);
-        self.TwitchBot.say_message("Round is now closed, updating world state. Next round starts in " + self.getFriendlyCountdownText(self.between_round_length) + "!");
+        self..say_message("Round is now closed, updating world state. Next round starts in " + self.getFriendlyCountdownText(self.between_round_length) + "!");
         self.executeRound();
         self.round_timer = new Date().getTime();
         self.round_timer_id = setTimeout(self.startRound, between_round_length);

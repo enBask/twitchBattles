@@ -17,11 +17,7 @@ lctvBot.prototype.init = function() {
 	this.bot.on('offline', this.offline);
 
 	this.bot.on('online', function () {
-		console.log("LCTV Bot is online.");
-
-		setTimeout(function(){
-			self.say_message("hello");
-		}, 5000);
+		console.log("LCTV Bot is online.");		
 	});
 
 	this.bot.on('message', function (from, message) {
