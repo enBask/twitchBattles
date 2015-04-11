@@ -18,6 +18,8 @@ MovementCommand.prototype.Execute = function(player, gameServer) {
 	if (path == null) return;
 
 	var prev_node = [mapLocation.x, mapLocation.y];
+	var start_location = mapLocation.location();
+	var move_log = "";
 	for(var i = 0; i < path.length; ++i) {
 		var node = path[i];
 
@@ -28,15 +30,18 @@ MovementCommand.prototype.Execute = function(player, gameServer) {
 		if (diff <= player.speed_points) {
 			gameServer.GameMap.movePlayer(player, node[0], node[1]);
 			player.speed_points -= diff;        
+
+			move_log += player.MapLocation.location() + " ";
 		}
 		else {
-			return;
+			continue;
 		}
 
 		prev_node = node;
 	}
 
-
+	gameServer.AddLog(player.username + " moved from " + start_location + "to "  + move_log);
+	player.AddLog("moved from " + start_location + "to "  + move_log);
 	
 }
 

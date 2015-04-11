@@ -23,6 +23,13 @@ AttackCommand.prototype.Execute = function(player, gameServer) {
 	if (distance <= 1)
 	{
 		this.attackee.Hit(1, player);
+		gameServer.AddLog(player.username + " attacked " + this.attackee.username + " for 1 HP");
+		player.AddLog("attacked " + this.attackee.username + " for 1 HP");
+	}
+	else
+	{
+		gameServer.AddLog(player.username + "tried to attack " + this.attackee.username + " and missed");	
+		player.AddLog("tried to attack " + this.attackee.username + " and missed");
 	}
 
 }
@@ -33,6 +40,9 @@ AttackCommand.Process = function(player, args) {
     if (!this.isRoundActive()) return;
 
     var attacking = args[0].toLowerCase();
+
+    attacking = this.ResolvePlayer(attacking);
+
     var self = this;
     this.GetUserIndirect(attacking, function(user){
            

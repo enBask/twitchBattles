@@ -60,6 +60,7 @@ function GameServer() {
     this.between_round_length = nconf.get("between_round_length");
     this.players = [];
     this.GameMap = new GameMap();    
+    this.RoundLog = [];
 }
 
 GameServer.prototype.say_message = function(message) {
@@ -99,13 +100,23 @@ GameServer.prototype.ValidateToken = function (token) {
     return (token === this.Token);
 };
 
+GameServer.prototype.AddLog = function(msg) {
+
+    this.RoundLog.push(msg);
+};
+
+GameServer.prototype.ClearLog = function() {
+    this.RoundLog = [];
+};
+
 GameServer.prototype.ExtractPlayers = function () {
 
     var player_data = [];
-    this.players.forEach(function(player){
+    this.players.forEach(function(player, idx){
 
         player_data.push({
             username: player.username,
+            number: idx+1,
             service: player.service,
             checkedin: player.checkedIn,
             active: player.active,
@@ -113,7 +124,8 @@ GameServer.prototype.ExtractPlayers = function () {
             hitpoints: player.hitpoints,
             x: player.MapLocation ? player.MapLocation.x : 0,
             y: player.MapLocation ? player.MapLocation.y : 0,
-            location: player.MapLocation ? player.MapLocation.location() : "A1"
+            location: player.MapLocation ? player.MapLocation.location() : "A1",
+            round_log: player.RoundLog
         });
     });
 
@@ -137,7 +149,8 @@ GameServer.prototype.GetWorldState = function () {
         checkin_active: this.checkin_active,
         round_timer: round_timer,
         between_round_length: this.between_round_length,
-        round_length: this.round_length
+        round_length: this.round_length,
+        round_log: this.RoundLog
     };
     return world;
 };
@@ -226,6 +239,14 @@ GameServer.prototype.startRound = function(){
 
     var self = GameServer.Instance();
 
+    //clear the player logs
+    for(i = 0; i < self.players.length; ++i )
+    {
+        var player = self.players[i];
+        player.ClearLog();
+    }
+    self.ClearLog();
+
     var round_length = self.round_length * 1000;
     var between_round_length = self.between_round_length * 1000;
     
@@ -277,6 +298,15 @@ GameServer.prototype.executeRound = function(){
             this.players.splice(i, 1);            
         }
     }
+};
+
+GameServer.prototype.ResolvePlayer = function(playerNumber){
+
+    playerNumber--;
+    if (playerNumber < 0 || playerNumber >= this.players.length)
+        return "";
+    else
+        return this.players[Number(playerNumber)].username;
 };
 
 GameServer.prototype.getFriendlyCountdownText = function(seconds) {

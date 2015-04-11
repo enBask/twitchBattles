@@ -8,6 +8,7 @@ function Player(ormUser) {
     this.service = ormUser.service;
     this.checkedIn = false;
     this.active = true;
+    this.RoundLog = [];
 
     this.color = {
                r : Math.random(),
@@ -20,6 +21,15 @@ function Player(ormUser) {
 
     this.hitpoints = 10;
 }
+
+Player.prototype.AddLog = function(msg) {
+
+    this.RoundLog.push(msg);
+};
+
+Player.prototype.ClearLog = function() {
+    this.RoundLog = [];
+};
 
 Player.prototype.Hit = function(damage, from) {
     this.hitpoints -= damage;
