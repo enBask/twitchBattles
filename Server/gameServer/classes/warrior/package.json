@@ -20,6 +20,13 @@
 			"speed": 4,
 			"command" : "block",
 			"script" : "block_cmd"
+		},
+		{
+			"name" : "Cleave",
+			"description" : "AOE Attack",
+			"speed": 10,
+			"command" : "cleave",
+			"script" : "cleave_cmd"
 		}
 	]
 

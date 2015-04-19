@@ -1,4 +1,5 @@
-var LocationHelper = rekuire('gameServer/commands/location.js');
+var BattleAPI = rekuire('gameServer/battleApi.js');
+
 
 
 function AttackCommand(player) {
@@ -6,31 +7,23 @@ function AttackCommand(player) {
 	this.attackee = player;
 }
 
-function map_distance(a, b) {
-	var diffX = Math.abs(b.x - a.x);
-	var diffY = Math.abs(b.y - a.y);
-	var diff = diffX + diffY;
-	return diff;
-}
-
 AttackCommand.prototype.Execute = function(player, gameServer) {
 
-	var mapLocation = gameServer.GameMap.getPosition(player);
-	var targetLocation = gameServer.GameMap.getPosition(this.attackee);
+	BattleAPI.AttackTarget(player, this.attackee, 3, 1, function(wasHit) {
 
-	var distance = map_distance(mapLocation, targetLocation);
-	if (distance <= 1)
-	{
-		this.attackee.Hit(1, player);
-		gameServer.AddLog(player.username + " attacked " + this.attackee.username + " for 1 HP");
-		player.AddLog("attacked " + this.attackee.username + " for 1 HP");
-	}
-	else
-	{
-		gameServer.AddLog(player.username + " tried to attack " + this.attackee.username + " and missed");	
-		player.AddLog("tried to attack " + this.attackee.username + " and missed");
-	}
+		if (wasHit) {
+			gameServer.AddLog(player.username + " attacked " 
+				+ this.attackee.username + " for 3 HP");
+			player.AddLog("attacked " + this.attackee.username + " for 3 HP");
 
+		}
+		else {
+
+			gameServer.AddLog(player.username + " tried to attack " 
+				+ this.attackee.username + " and missed");	
+			player.AddLog("tried to attack " + this.attackee.username + " and missed");
+		}
+	});
 }
 
 AttackCommand.Process = function(player, args, callback) {

@@ -69,6 +69,18 @@ GameMap.prototype.addPlayer = function(player) {
         
 };
 
+GameMap.prototype.getPlayers = function(x, y) {
+
+   if (!this.isLocationValid(x,y)) return [];
+
+   var pos = this.lookupLocation(x,y);
+   if (pos === undefined)
+        pos = 0;
+   var players = this.locations[pos];
+
+   return players.slice(0);
+};
+
 GameMap.prototype.movePlayer = function(player, x, y) {
     
     if (!this.playerExists(player)) return;
@@ -93,7 +105,7 @@ GameMap.prototype.movePlayer = function(player, x, y) {
           var len = alphabet.length;
           var data = "";
           if (y >= len) {
-            data = alphabet[i / len - 1] + alphabet[i % len];
+            data = alphabet[y / len - 1] + alphabet[y % len];
           }
           else {
             data = alphabet[y];

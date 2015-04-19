@@ -1,6 +1,8 @@
 var fs = require("fs"),
 path = require("path");
-var PriorityQueue = require("../PriorityQueue.js");
+var pq = require("priority_queue");
+
+var BattleAPI = require("./battleApi.js");
 
 var Database = require("./orm/db.js");
 var TwitchBot = require("../twitchBot.js");
@@ -289,11 +291,13 @@ GameServer.prototype.startRound = function(){
     self.setRoundActive(true);
     self.round_timer = new Date().getTime();
 
-    self.say_message("Round is now active for " + self.getFriendlyCountdownText(self.round_length) + "! input commands.");
+    self.say_message("Round is now active for " + self.getFriendlyCountdownText(self.round_length) 
+        + "! input commands.");
     self.round_timer_id = setTimeout( function(){
         
         self.setRoundActive(false);
-        self.say_message("Round is now closed, updating world state. Next round starts in " + self.getFriendlyCountdownText(self.between_round_length) + "!");
+        self.say_message("Round is now closed, updating world state. Next round starts in " 
+            + self.getFriendlyCountdownText(self.between_round_length) + "!");
         self.executeRound();
         self.round_timer = new Date().getTime();
         self.round_timer_id = setTimeout(self.startRound, between_round_length);
@@ -304,7 +308,14 @@ GameServer.prototype.startRound = function(){
 
 GameServer.prototype.executeRound = function(){
     
-    var pQueue = new PriorityQueue("speed", 0);
+    BattleAPI.Tick();
+    
+    var pQueue = new pq.PriorityQueue(function(a,b) {
+
+        return a.speed - b.speed;
+
+    });
+
     //execute everyone's actions before allowing anyone to move
     this.players.forEach(function(player) {
 
@@ -313,14 +324,14 @@ GameServer.prototype.executeRound = function(){
             var q = player.GetAndClearQueue(false);
             q.forEach(function(command) {
                 command.player = player;
-                pQueue.insert(command);
+                pQueue.push(command);
             });
         }
     });
 
     while(pQueue.length > 0) {
 
-        var cmd = pQueue.shiftHighestPriorityElement();
+        var cmd = pQueue.shift();
         cmd.Execute(cmd.player, this);
     }
 

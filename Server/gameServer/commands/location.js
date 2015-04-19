@@ -37,7 +37,24 @@ LocationHelper.ConvertCellToLocation = function(cell) {
 		}
 	}
 
-	return {x:x,y:y};
+	return {
+		x: x,
+		y: y,
+		location: function() {
+
+          var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+          var len = alphabet.length;
+          var data = "";
+          if (y >= len) {
+            data = alphabet[y / len - 1] + alphabet[y % len];
+          }
+          else {
+            data = alphabet[y];
+          }
+
+          return data + (x+1);
+        }
+    };
 }
 
 LocationHelper.Lookup = function(cur_location, data){
