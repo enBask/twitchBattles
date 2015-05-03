@@ -31,7 +31,7 @@ LocationHelper.ConvertCellToLocation = function(cell) {
 			var num = Number(rem);
 			if (num != NaN)
 			{
-				x = num-1
+				x = num-1;
 				break;
 			}
 		}
@@ -88,7 +88,27 @@ LocationHelper.Lookup = function(cur_location, data){
 			    x++;
 			}
 
-			return {x:x, y:y};
+			var rLoc = 
+			{
+				x: x, 
+				y: y,
+				location: function() {
+
+		          var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		          var len = alphabet.length;
+		          var data = "";
+		          if (y >= len) {
+		            data = alphabet[y / len - 1] + alphabet[y % len];
+		          }
+		          else {
+		            data = alphabet[y];
+		          }
+		
+		          return data + (x+1);
+        		}
+			};
+			
+			return rLoc;
 		}
 		else
 		{
