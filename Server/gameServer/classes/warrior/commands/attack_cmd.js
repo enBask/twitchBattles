@@ -9,22 +9,23 @@ function AttackCommand(player) {
 
 AttackCommand.prototype.Execute = function(player, gameServer) {
 
+	var self = this;
 	BattleAPI.AttackTarget(player, this.attackee, 3, 1, function(wasHit) {
 
 		if (wasHit) {
 			gameServer.AddLog(player.username + " attacked " 
-				+ this.attackee.username + " for 3 HP");
-			player.AddLog("attacked " + this.attackee.username + " for 3 HP");
+				+ self.attackee.username + " for 3 HP");
+			player.AddLog("attacked " + self.attackee.username + " for 3 HP");
 
 		}
 		else {
 
 			gameServer.AddLog(player.username + " tried to attack " 
-				+ this.attackee.username + " and missed");	
-			player.AddLog("tried to attack " + this.attackee.username + " and missed");
+				+ self.attackee.username + " and missed");	
+			player.AddLog("tried to attack " + self.attackee.username + " and missed");
 		}
 	});
-}
+};
 
 AttackCommand.Process = function(player, args, callback) {
 

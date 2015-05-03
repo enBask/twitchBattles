@@ -387,4 +387,4 @@ GameServer.prototype.getFriendlyCountdownText = function(seconds) {
 GameServer._instance = null;
 
 
-module.exports = GameServer;
+module.exports.Instance = GameServer.Instance;

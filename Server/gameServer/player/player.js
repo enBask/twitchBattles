@@ -1,4 +1,5 @@
 var extend = require('util')._extend;
+var BattleAPI = rekuire('gameServer/battleApi.js');
 
 function Player(ormUser) {
     
@@ -27,9 +28,8 @@ Player.prototype.SetClass = function(classObject) {
 Player.prototype.CreateAttributes = function(classObject) {
     
     this.starting_attributes = require('./default_attributes.json');
-    classObject.apply_attributes(this.starting_attributes);
-
     this.attributes = extend({}, this.starting_attributes);
+    classObject.apply_attributes(this.attributes);
 
     this.speed_points = this.attributes.move_speed;   
 }
@@ -44,12 +44,20 @@ Player.prototype.ClearLog = function() {
 };
 
 Player.prototype.Hit = function(damage, from) {
+    
+    BattleAPI.Emit("hit", this, from, this);    
+    if (BattleAPI.ActionCanceled()) 
+        return false;
+    
+    
     this.attributes.hitpoints -= damage;
     if (this.attributes.hitpoints <=0) this.attributes.hitpoints =0;
 
     if (this.attributes.hitpoints == 0) {
         this.kill();
     }
+    
+    return true;
 };
 
 Player.prototype.kill = function() {

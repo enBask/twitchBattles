@@ -1,3 +1,4 @@
+var BattleServer = rekuire('gameServer/server.js');
 var BattleAPI = rekuire('gameServer/battleApi.js');
 var LocationHelper = rekuire('gameServer/commands/location.js');
 
@@ -6,9 +7,18 @@ var LocationHelper = rekuire('gameServer/commands/location.js');
 function BlockCommand() {
 }
 
+BlockCommand.prototype.OnHitCallback = function (attacker, attacked) {
+	
+	var gameServer = BattleServer.Instance();
+	gameServer.AddLog(attacked.username + " blocked attack from " + attacker.username);	
+	BattleAPI.CancelAction();		
+};
+
+
 BlockCommand.prototype.Execute = function(player, gameServer) {	
 
-	//BattleAPI.SetFlag(player, "ignore");
+	BattleAPI.RegisterOnce( "hit", this.OnHitCallback, this, player );
+	
 	gameServer.AddLog(player.username + 
 		" is blocking for 2 rounds");
 
@@ -16,8 +26,8 @@ BlockCommand.prototype.Execute = function(player, gameServer) {
 
 		gameServer.AddLog(player.username + 
 			" block timed out");
-
-		//BattleAPI.UnsetFlag(player, "ignore");
+			
+		BattleAPI.Unregister("hit", this.OnHitCallback, player);
 	});
 }
 

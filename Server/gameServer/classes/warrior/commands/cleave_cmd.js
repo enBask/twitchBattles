@@ -8,9 +8,10 @@ function CleaveCommand(location) {
 
 CleaveCommand.prototype.Execute = function(player, gameServer) {
 
+	var self = this;
 	BattleAPI.AttackLocation(player, this.location, 1, 1, function(wasHit) {
 
-		var location_text = this.location.location();
+		var location_text = self.location.location();
 		if (wasHit) {
 			gameServer.AddLog(player.username + " cleave "
 				+ location_text + " for 1 HP");

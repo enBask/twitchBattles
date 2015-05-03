@@ -14,32 +14,31 @@ app.set('view engine', 'jade');
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
 
-//load up env based config file.
-nconf.set('game_server_password', 'password');
-nconf.set('game_server_port', '8080');
-nconf.set('game_server_fetch_url', 'http://localhost:8080/headless/world_state/');
-nconf.set('twitch_name', 'test');
-nconf.set('twitch_auth', 'test');
-nconf.set('twitch_channel', '#test');
-nconf.set('twitch_command', '!battle');  
-
-nconf.set('round_length', 60);   
-nconf.set('between_round_length', 60);   
-
-nconf.set('lctv_auth_name', 'test');
-nconf.set('lctv_auth_pass', 'b@test');
-nconf.set('lctv_username', 'test');
-nconf.set('lctv_channel', 'test');
-nconf.set('lctv_enabled', 'false');
-
-// Salt for sessions. 
-// "session_token": "testtoken" in config, should generate this dynamically on app startup?
-// This would mean that if the application is ever restarted sessions will be invalidated - which isn't a bad thing.
-nconf.set('session_token', 'testtoken'); 
-
 nconf.argv()
-     .env()
-     .file({file: './config.json'});
+    .env()
+    .file({ file: './config.json' });
+
+
+//load up env based config file.
+nconf.defaults( {
+    'game_server_password' :'password',
+    'game_server_port' : '8080',
+    'game_server_fetch_url' : 'http://localhost:8080/headless/world_state/',
+    'twitch_name' : 'test',
+    'twitch_auth' : 'test',
+    'twitch_channel' : '#test',
+    'twitch_command' : '!battle',
+    
+    'round_length' : 60,
+    'between_round_length' : 60,
+    
+    'lctv_auth_name' : 'test',
+    'lctv_auth_pass' : 'b@test',
+    'lctv_username' : 'test',
+    'lctv_channel' : 'test',
+    'lctv_enabled' : 'false',
+    'session_token' : 'testtoken'
+});
 
 var GameServer = require("./gameServer/server.js");
 var battleServer = GameServer.Instance();
@@ -55,11 +54,11 @@ app.use("/web", webRoutes);
 app.use(websiteRoutes);
 
 var port = nconf.get("game_server_port");
-var server = app.listen(port, function() {
-   
+var server = app.listen(port, function () {
+
     var host = server.address().address;
     var port = server.address().port;
-    
+
     console.log("TwitchBattle server running. Listening on http://%s:%s", host, port);
 });
 
