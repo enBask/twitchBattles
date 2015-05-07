@@ -12,6 +12,7 @@ function Player(ormUser) {
     this.checkedIn = false;
     this.active = true;
     this.RoundLog = [];
+    
 
     this.color = {
                r : Math.random(),

@@ -35,8 +35,6 @@ BlockCommand.Process = function(player, args, callback) {
 
     if (!this.isRoundActive()) return;
 
-    var self = this;
-
 	var block_cmd = new BlockCommand();
 	player.QueueCommand(block_cmd, false);
 	callback(block_cmd);

@@ -1,3 +1,4 @@
+var GameServer = rekuire("gameServer/server.js");
 
 
 function Class(class_name, class_data) {
@@ -10,6 +11,9 @@ function Class(class_name, class_data) {
 
 Class.prototype.LoadCommands = function() {
 
+	var gameServer = GameServer.Instance();
+	var animationSystem = gameServer.AnimationSystem;
+	
 	var abilities = this.data.abilities;
 	var self = this;
 	abilities.forEach(function(ability) {
@@ -24,6 +28,9 @@ Class.prototype.LoadCommands = function() {
 
 		ability_plugin.Speed = ability.speed;
 		self.commands[ability.command] = ability_plugin;
+		
+		animationSystem.createAnimation(ability_plugin, ability.animation);
+		
 	});
 };
 

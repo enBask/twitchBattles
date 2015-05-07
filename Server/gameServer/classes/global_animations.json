@@ -1,0 +1,55 @@
+{
+	"Animations" : [
+		{
+			"name" : "default_attack",
+			"animations" : [
+				{
+					"image" : "/warrior/animations/attack.png",
+					"frames" : [1,2,3,4],
+					"duration": 1.0,
+					"start_point": "{defender}",
+					"end_point": "{defender}",
+					"moves": false
+				},
+				{
+					"image" : "/warrior/animations/attack.png",
+					"frames" : [5,6,7,8],
+					"duration": 1.0,
+					"start_point": "{attacker}",
+					"end_point": "{attacker}",
+					"moves": false
+				}
+			]
+		},
+		{
+			"name": "test_extra",
+			"animations" : [
+				{
+					"name" : "default_attack",
+					"global" : true	
+				},
+				{
+					"name" : "test1",
+					"animations" : [
+						{
+							"image" : "/warrior/animations/attack.png",
+							"frames" : [5,6,7,8],
+							"duration": 1.0,
+							"start_point": "{attacker}",
+							"end_point": "{attacker}",
+							"moves": false							
+						}
+					]
+				},
+				{
+					"image" : "/warrior/animations/attack.png",
+					"frames" : [5,6,7,8],
+					"duration": 1.0,
+					"start_point": "{attacker}",
+					"end_point": "{attacker}",
+					"moves": false												
+				}
+			]
+		}
+	]		
+}

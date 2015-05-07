@@ -8,6 +8,7 @@ var Database = require("./orm/db.js");
 var TwitchBot = require("../twitchBot.js");
 var nconf = require('nconf');
 
+var AnimationSystem = require("./animations/animationSystem.js");
 var Class = require("./classes/class.js");
 var Player = require("./player/player.js")
 var GameMap = require("./map.js");
@@ -28,8 +29,6 @@ if (nconf.get("lctv_enabled") == true) {
 function GameServer() {
     // Generate Token
     this.Token = this.GenerateToken();
-
-    this.LoadClasses();
 
     // Setup Twitch Bot Instance.
     this.TwitchBot = new TwitchBot(
@@ -69,8 +68,10 @@ function GameServer() {
     this.round_length = nconf.get("round_length");
     this.between_round_length = nconf.get("between_round_length");
     this.players = [];
-    this.GameMap = new GameMap();    
     this.RoundLog = [];
+    this.GameMap = new GameMap();    
+    this.AnimationSystem = new AnimationSystem();
+    this.RoundAnimations = [];
 }
 
 GameServer.prototype.say_message = function(message) {
@@ -84,7 +85,9 @@ GameServer.prototype.say_message = function(message) {
 // Gets the current instance of the GameServer - Use this instead of the constructor above.
 GameServer.Instance = function () {
     if (GameServer._instance === null) {
-        return GameServer._instance = new GameServer();
+        GameServer._instance = new GameServer();
+        GameServer._instance.AnimationSystem.Load();
+        GameServer._instance.LoadClasses();
     }
     return GameServer._instance;
 };
@@ -112,8 +115,13 @@ GameServer.prototype.AddLog = function(msg) {
     this.RoundLog.push(msg);
 };
 
+GameServer.prototype.AddAnimation = function(animation) {
+    this.RoundAnimations.push(animation);
+}
+
 GameServer.prototype.ClearLog = function() {
     this.RoundLog = [];
+    this.RoundAnimations = [];
 };
 
 GameServer.prototype.LoadClasses = function () {

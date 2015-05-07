@@ -1,7 +1,5 @@
 var BattleAPI = rekuire('gameServer/battleApi.js');
 
-
-
 function AttackCommand(player) {
 
 	this.attackee = player;
@@ -13,6 +11,10 @@ AttackCommand.prototype.Execute = function(player, gameServer) {
 	BattleAPI.AttackTarget(player, this.attackee, 3, 1, function(wasHit) {
 
 		if (wasHit) {
+		
+			var animation = gameServer.AnimationSystem.getPluginAnimation(AttackCommand, "default_attack" );
+			gameServer.AddAnimation(animation);
+			
 			gameServer.AddLog(player.username + " attacked " 
 				+ self.attackee.username + " for 3 HP");
 			player.AddLog("attacked " + self.attackee.username + " for 3 HP");
